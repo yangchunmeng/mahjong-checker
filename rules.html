@@ -7,56 +7,59 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>麻将规则说明 - 手机版</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { touch-action: manipulation; }
-        body { font-size: 16px; line-height: 1.6; }
+        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
+        body { font-size: 16px; line-height: 1.6; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body>
     <div class="container mx-auto px-3 py-4 max-w-full">
         <nav class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold text-gray-800">麻将规则说明</h1>
-            <div>
-                <a href="index.html" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition text-sm">
-                    <i class="fas fa-arrow-left mr-1"></i>返回
-                </a>
-            </div>
+            <a href="index.html" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-500 transition text-sm flex items-center">
+                <i class="fas fa-arrow-left mr-1"></i> 返回
+            </a>
         </nav>
 
-        <div class="bg-white rounded-xl shadow-md p-4 mb-4">
-            <h2 class="text-xl font-bold mb-4 text-center border-b pb-2">麻将规则详解（2011国标官方版）</h2>
+        <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
+            <h2 class="text-xl font-bold mb-4 text-center border-b pb-2 text-gray-800">麻将规则详解（2011国标官方版）</h2>
+            
+            <!-- 通用胡牌规则 -->
             <div class="mb-4">
-                <h3 class="text-lg font-semibold mb-2 text-blue-600">
-                    <i class="fas fa-star mr-1"></i>通用胡牌规则
+                <h3 class="text-lg font-semibold mb-2 text-blue-600 flex items-center">
+                    <i class="fas fa-star mr-1"></i> 通用胡牌规则
                 </h3>
-                <div class="pl-2 text-sm">
+                <div class="pl-2 text-sm text-gray-700">
                     <p class="mb-1"><strong>基本胡牌条件：</strong>手牌满足 (n-2) 是3的倍数（普通胡牌）或 14张七对</p>
                     <p class="mb-1"><strong>普通胡牌结构：</strong>将牌（对子）+ 4组刻子/顺子（每组3张）</p>
                     <p class="mb-1"><strong>七对胡牌结构：</strong>7个对子（龙七对包含四张相同牌）</p>
-                    <p class="text-red-500 font-medium text-sm">核心新增番型：断幺九 → 手牌无1/9序数牌、无字牌，全规则通用1番</p>
+                    <p class="text-red-600 font-medium text-sm">核心番型：断幺九 → 手牌无1/9序数牌、无字牌，全规则通用1番</p>
                 </div>
             </div>
+
+            <!-- 国标麻将 -->
             <div class="mb-4">
-                <h3 class="text-lg font-semibold mb-2 text-red-600">
-                    <i class="fas fa-flag mr-1"></i>国标麻将（2011官方版）
+                <h3 class="text-lg font-semibold mb-2 text-red-600 flex items-center">
+                    <i class="fas fa-flag mr-1"></i> 国标麻将（2011版）
                 </h3>
-                <div class="pl-2 text-sm">
+                <div class="pl-2 text-sm text-gray-700">
                     <p class="font-medium mb-1">番型及番数（按官方标准）：</p>
                     <ul class="list-disc list-inside mb-2 space-y-0.5">
                         <li>平胡：1番 | 断幺九：1番 | 幺九刻：1番 | 门清：1番</li>
                         <li>平和：2番 | 明杠：1番 | 暗杠：2番 | 混一色：6番</li>
-                        <li>碰碰胡：6番 | 七对：6番 | 清一色：24番 | 龙七对：16番</li>
+                        <li>碰碰胡：6番 | 清一色：24番 | 七对：6番 | 龙七对：16番</li>
                         <li>杠上花：8番（附加番） | 海底捞月：8番（附加番）</li>
                     </ul>
                 </div>
             </div>
+
+            <!-- 四川麻将 -->
             <div class="mb-4">
-                <h3 class="text-lg font-semibold mb-2 text-green-600">
-                    <i class="fas fa-flag mr-1"></i>四川麻将规则
+                <h3 class="text-lg font-semibold mb-2 text-green-600 flex items-center">
+                    <i class="fas fa-flag mr-1"></i> 四川麻将
                 </h3>
-                <div class="pl-2 text-sm">
+                <div class="pl-2 text-sm text-gray-700">
                     <p class="font-medium mb-1">番型及番数：</p>
                     <ul class="list-disc list-inside mb-2 space-y-0.5">
                         <li>平胡：1番 | 断幺九：1番 | 碰碰胡：2番 | 混一色：2番</li>
@@ -65,11 +68,13 @@
                     </ul>
                 </div>
             </div>
+
+            <!-- 广东麻将 -->
             <div class="mb-4">
-                <h3 class="text-lg font-semibold mb-2 text-yellow-600">
-                    <i class="fas fa-flag mr-1"></i>广东麻将规则
+                <h3 class="text-lg font-semibold mb-2 text-yellow-600 flex items-center">
+                    <i class="fas fa-flag mr-1"></i> 广东麻将
                 </h3>
-                <div class="pl-2 text-sm">
+                <div class="pl-2 text-sm text-gray-700">
                     <p class="font-medium mb-1">番型及番数：</p>
                     <ul class="list-disc list-inside mb-2 space-y-0.5">
                         <li>平胡：1番 | 断幺九：1番 | 碰碰胡：3番 | 混一色：2番</li>
@@ -78,11 +83,13 @@
                     </ul>
                 </div>
             </div>
+
+            <!-- 计分说明 -->
             <div>
-                <h3 class="text-lg font-semibold mb-2 text-purple-600">
-                    <i class="fas fa-trophy mr-1"></i>核心番型&计分说明
+                <h3 class="text-lg font-semibold mb-2 text-purple-600 flex items-center">
+                    <i class="fas fa-trophy mr-1"></i> 核心番型&计分说明
                 </h3>
-                <div class="pl-2 flex flex-col gap-2 text-sm">
+                <div class="pl-2 flex flex-col gap-2 text-sm text-gray-700">
                     <div class="mb-2">
                         <p class="font-medium">断幺九（全规则1番）：</p>
                         <p class="text-gray-600">手牌中无1/9序数牌、无字牌，国标基础核心番</p>
@@ -93,7 +100,7 @@
                     </div>
                     <div class="p-2 bg-blue-50 rounded-lg mt-2">
                         <p class="font-medium text-blue-800 text-sm">计分规则：最终得分 = 底分 × 总番数（基础番+附加番）</p>
-                        <p class="text-gray-700 text-xs">默认底分5 | 例：底分5 + 基础3番 + 杠上花8番 → 5×11=55分</p>
+                        <p class="text-gray-700 text-xs mt-1">✅ 默认底分5 | 示例：底分5 + 基础3番 + 杠上花8番 → 5×11=55分</p>
                     </div>
                 </div>
             </div>
