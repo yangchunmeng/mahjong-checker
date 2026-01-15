@@ -1,0 +1,25 @@
+/* 麻将牌图案图标样式 */
+.ma-card .mahjong-icon {
+    font-size: 24px !important;
+    margin-bottom: 4px;
+    display: block;
+}
+.ma-card .mahjong-text {
+    font-size: 12px !important;
+    color: #333;
+}
+
+/* 牌型分解区的图标适配 */
+.pattern-card .mahjong-icon {
+    font-size: 16px !important;
+    margin-bottom: 2px;
+}
+.pattern-card .mahjong-text {
+    font-size: 10px !important;
+}
+
+/* 不同牌型的图标配色 */
+.wan-icon { color: #e53935; }    /* 万子-红色 */
+.tiao-icon { color: #2e7d32; }   /* 条子-绿色 */
+.tong-icon { color: #f57c00; }   /* 筒子-橙色 */
+.zi-icon { color: #1565c0; }     /* 字牌-蓝色 */
