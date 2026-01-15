@@ -10,15 +10,13 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* 手机端紧急样式兜底 */
         * { touch-action: manipulation; }
         body { font-size: 16px; line-height: 1.5; }
-        select, button { font-size: 16px !important; } /* 避免iOS默认缩小字体 */
+        select, button { font-size: 16px !important; }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-3 py-4 max-w-full">
-        <!-- 导航栏-手机端精简 -->
         <nav class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold text-gray-800">麻将听牌分析器</h1>
             <div>
@@ -28,7 +26,6 @@
             </div>
         </nav>
 
-        <!-- 规则选择区-手机端竖向堆叠 -->
         <div class="bg-white rounded-xl shadow-md p-4 mb-4">
             <h2 class="text-lg font-semibold mb-3">规则设置</h2>
             <div class="flex flex-col gap-3">
@@ -40,18 +37,14 @@
                         <option value="guangdong">广东麻将</option>
                     </select>
                 </div>
-
-                <!-- 底分设置-手机端适配 -->
                 <div class="flex items-center gap-2">
                     <label class="font-medium min-w-[100px]">底分：</label>
                     <select id="base-score" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg" disabled>
-                        <option value="1" selected>1</option>
-                        <option value="5">5</option>
+                        <option value="1">1</option>
+                        <option value="5" selected>5</option>
                         <option value="10">10</option>
                     </select>
                 </div>
-                
-                <!-- 四川麻将定缺-手机端适配 -->
                 <div id="sichuan-options" class="hidden flex items-center gap-2">
                     <label class="font-medium min-w-[100px]">定缺：</label>
                     <select id="lack-selector" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg">
@@ -64,51 +57,31 @@
             </div>
         </div>
 
-        <!-- 手牌选择区-手机端牌库放大 -->
         <div class="bg-white rounded-xl shadow-md p-4 mb-4">
             <h2 class="text-lg font-semibold mb-3">牌库选择</h2>
-            <!-- 牌型分类-手机端单列，牌放大 -->
             <div class="flex flex-col gap-4 mb-4">
-                <!-- 万子 -->
                 <div>
                     <h3 class="text-base font-medium mb-2 text-center">万子</h3>
-                    <div class="flex flex-wrap justify-center gap-1.5" id="wanzi-container">
-                        <!-- JS动态生成 -->
-                    </div>
+                    <div class="flex flex-wrap justify-center gap-1.5" id="wanzi-container"></div>
                 </div>
-                
-                <!-- 条子 -->
                 <div>
                     <h3 class="text-base font-medium mb-2 text-center">条子</h3>
-                    <div class="flex flex-wrap justify-center gap-1.5" id="tiaozi-container">
-                        <!-- JS动态生成 -->
-                    </div>
+                    <div class="flex flex-wrap justify-center gap-1.5" id="tiaozi-container"></div>
                 </div>
-                
-                <!-- 筒子 -->
                 <div>
                     <h3 class="text-base font-medium mb-2 text-center">筒子</h3>
-                    <div class="flex flex-wrap justify-center gap-1.5" id="tongzi-container">
-                        <!-- JS动态生成 -->
-                    </div>
+                    <div class="flex flex-wrap justify-center gap-1.5" id="tongzi-container"></div>
                 </div>
             </div>
-
-            <!-- 字牌-手机端放大 -->
             <div id="zapai-section" class="mb-2">
                 <h3 class="text-base font-medium mb-2 text-center">字牌</h3>
-                <div class="flex flex-wrap justify-center gap-1.5" id="zapai-container">
-                    <!-- JS动态生成 -->
-                </div>
+                <div class="flex flex-wrap justify-center gap-1.5" id="zapai-container"></div>
             </div>
         </div>
 
-        <!-- 当前手牌展示区-手机端优化 -->
         <div class="bg-white rounded-xl shadow-md p-4 mb-4">
             <div class="flex justify-between items-center mb-3">
-                <h2 class="text-lg font-semibold">当前手牌 
-                    <span class="text-xs text-gray-500">(自动排序)</span>
-                </h2>
+                <h2 class="text-lg font-semibold">当前手牌 <span class="text-xs text-gray-500">(自动排序)</span></h2>
                 <button id="sort-hand-btn" class="bg-green-600 text-white px-2 py-1 rounded-lg hover:bg-green-700 transition text-xs">
                     <i class="fas fa-sort mr-1"></i>排序
                 </button>
@@ -122,38 +95,25 @@
             </div>
         </div>
 
-        <!-- 分析按钮-手机端全屏放大 -->
         <div class="text-center mb-4">
             <button id="analyze-btn" class="bg-blue-600 text-white w-full px-6 py-3 rounded-lg hover:bg-blue-700 transition text-base font-medium">
                 分析听牌/胡牌
             </button>
         </div>
 
-        <!-- 分析结果区-手机端精简间距 -->
         <div class="bg-white rounded-xl shadow-md p-4">
             <h2 class="text-lg font-semibold mb-3">分析结果</h2>
-            <div id="result-area" class="text-gray-700 text-sm">
-                请选择手牌后点击分析按钮
-            </div>
-
-            <!-- 胡牌牌型图示区-手机端适配 -->
+            <div id="result-area" class="text-gray-700 text-sm">请选择手牌后点击分析按钮</div>
             <div id="hu-pattern-display" class="mt-4 hidden">
                 <h3 class="text-base font-medium mb-2 text-green-600">胡牌牌型分解</h3>
-                <div class="flex flex-wrap justify-center gap-2" id="pattern-container">
-                    <!-- JS动态生成牌型图示 -->
-                </div>
+                <div class="flex flex-wrap justify-center gap-2" id="pattern-container"></div>
             </div>
-
-            <!-- 弃牌推荐区-手机端竖向卡片优化 -->
             <div id="discard-recommend" class="mt-4 hidden">
                 <h3 class="text-base font-medium mb-2 text-blue-600">弃牌听牌推荐</h3>
-                <div id="recommend-list" class="flex flex-wrap gap-2 flex-col">
-                    <!-- JS动态生成 -->
-                </div>
+                <div id="recommend-list" class="flex flex-wrap gap-2 flex-col"></div>
             </div>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
