@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>麻将胡牌听牌分析器</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">麻将胡牌听牌分析器</h1>
+
+        <!-- 规则选择区 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">规则设置</h2>
+            <div class="flex flex-wrap gap-4 items-center">
+                <label class="font-medium">选择麻将规则：</label>
+                <select id="rule-selector" class="px-4 py-2 border border-gray-300 rounded-lg">
+                    <option value="national">国标麻将</option>
+                    <option value="sichuan">四川麻将</option>
+                    <option value="guangdong">广东麻将</option>
+                </select>
+                
+                <!-- 四川麻将特殊选项 -->
+                <div id="sichuan-options" class="hidden">
+                    <label class="font-medium mr-2">定缺：</label>
+                    <select id="lack-selector" class="px-4 py-2 border border-gray-300 rounded-lg">
+                        <option value="none">无</option>
+                        <option value="wan">万</option>
+                        <option value="tiao">条</option>
+                        <option value="tong">筒</option>
+                    </select>
+                </div>
+                
+                <!-- 特殊牌型选项 -->
+                <div class="ml-auto">
+                    <label class="inline-flex items-center mr-4">
+                        <input type="checkbox" id="gangshanghua" class="mr-2"> 杠上花
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" id="haidilaoyue" class="mr-2"> 海底捞月
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 状态提示区 -->
+        <div id="status-alert" class="mb-6 p-4 rounded-lg hidden"></div>
+
+        <!-- 手牌选择区 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">选择手牌</h2>
+            
+            <!-- 牌型分类 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <!-- 万子 -->
+                <div>
+                    <h3 class="text-lg font-medium mb-2 text-center">万子</h3>
+                    <div class="flex flex-wrap justify-center gap-2" id="wanzi-container">
+                        <!-- 万子牌由JS动态生成 -->
+                    </div>
+                </div>
+                
+                <!-- 条子 -->
+                <div>
+                    <h3 class="text-lg font-medium mb-2 text-center">条子</h3>
+                    <div class="flex flex-wrap justify-center gap-2" id="tiaozi-container">
+                        <!-- 条子牌由JS动态生成 -->
+                    </div>
+                </div>
+                
+                <!-- 筒子 -->
+                <div>
+                    <h3 class="text-lg font-medium mb-2 text-center">筒子</h3>
+                    <div class="flex flex-wrap justify-center gap-2" id="tongzi-container">
+                        <!-- 筒子牌由JS动态生成 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 字牌 -->
+            <div id="zapai-section" class="mb-6">
+                <h3 class="text-lg font-medium mb-2 text-center">字牌</h3>
+                <div class="flex flex-wrap justify-center gap-2" id="zapai-container">
+                    <!-- 字牌由JS动态生成 -->
+                </div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="flex justify-center gap-4">
+                <button id="analyze-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">分析手牌</button>
+                <button id="reset-btn" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">重置手牌</button>
+            </div>
+        </div>
+
+        <!-- 分析结果区 -->
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">分析结果</h2>
+            <div id="result-area" class="text-gray-700">
+                请选择手牌后点击"分析手牌"按钮
+            </div>
+            <!-- 番型详情 -->
+            <div id="fan-details" class="mt-4 p-4 bg-gray-50 rounded-lg hidden">
+                <h3 class="text-lg font-medium mb-2">番型详情</h3>
+                <ul id="fan-list" class="list-disc list-inside space-y-1"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
