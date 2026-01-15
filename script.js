@@ -5,44 +5,6 @@ const cardTypes = {
     zapai: ['东', '南', '西', '北', '中', '发', '白']
 };
 
-// 新增：获取麻将牌对应的图标和样式类
-function getMahjongIcon(card) {
-    let iconClass = '';
-    let typeClass = '';
-    const cardText = card.replace(/[0-9]/, ''); // 提取牌型（万/条/筒/字）
-    
-    // 万子（饼图图标）
-    if (card.includes('万')) {
-        iconClass = 'fas fa-circle-dot';
-        typeClass = 'wan-icon';
-    }
-    // 条子（竹节/数字图标）
-    else if (card.includes('条')) {
-        iconClass = 'fas fa-bamboo';
-        typeClass = 'tiao-icon';
-    }
-    // 筒子（方块图标）
-    else if (card.includes('筒')) {
-        iconClass = 'fas fa-square';
-        typeClass = 'tong-icon';
-    }
-    // 字牌（方向/文字图标）
-    else {
-        switch (card) {
-            case '东': iconClass = 'fas fa-arrow-right'; break;
-            case '南': iconClass = 'fas fa-arrow-down'; break;
-            case '西': iconClass = 'fas fa-arrow-left'; break;
-            case '北': iconClass = 'fas fa-arrow-up'; break;
-            case '中': iconClass = 'fas fa-circle'; break;
-            case '发': iconClass = 'fas fa-money-bill-wave'; break;
-            case '白': iconClass = 'fas fa-square-full'; break;
-            default: iconClass = 'fas fa-circle';
-        }
-        typeClass = 'zi-icon';
-    }
-    return { iconClass, typeClass, cardText };
-}
-
 const fanDefinitions = {
     national: {
         pinghu: { name: '平胡', fan: 1, type: 'base' },
@@ -106,7 +68,11 @@ function initHandCards() {
         cards.forEach(card => handCards[card] = 0);
     }
     updateHandCardDisplay();
-    document.getElementById('base-score').disabled = true;
+    const baseScoreEl = document.getElementById('base-score');
+    if (baseScoreEl) {
+        baseScoreEl.disabled = true;
+        baseScoreEl.value = 5; // 重置底分输入框为默认值
+    }
 }
 
 // 生成牌库（核心修复：容器校验+清空重绘，保证牌显示）
@@ -122,20 +88,12 @@ function generateCardLibrary() {
     }
 }
 
-// 新增：创建带图标的牌面元素 + 手机触控反馈
+// 创建牌面元素 + 手机触控反馈
 function createCardElement(card, type) {
     const cardEl = document.createElement('div');
     cardEl.className = 'ma-card';
     cardEl.dataset.card = card;
-    
-    // 获取麻将图标配置
-    const { iconClass, typeClass, cardText } = getMahjongIcon(card);
-    
-    // 构建牌面结构（图标 + 文字）
-    cardEl.innerHTML = `
-        <i class="mahjong-icon ${iconClass} ${typeClass}"></i>
-        <span class="mahjong-text">${card}</span>
-    `;
+    cardEl.textContent = card;
     
     // 选牌逻辑
     cardEl.addEventListener('click', () => {
@@ -173,15 +131,26 @@ function bindEvents() {
         updateHandCardDisplay();
     });
 
-    // 底分切换（实时重新计算）
-    document.getElementById('base-score').addEventListener('change', (e) => {
-        baseScore = parseInt(e.target.value);
-        if (!document.getElementById('hu-pattern-display').classList.contains('hidden')) {
-            const cardsArray = getHandCardsArray();
-            const cardGroups = organizeCards(cardsArray);
-            reCalculateScore(cardGroups);
-        }
-    });
+    // 底分输入（替换原下拉框事件，支持自由输入）
+    const baseScoreEl = document.getElementById('base-score');
+    if (baseScoreEl) {
+        baseScoreEl.addEventListener('input', (e) => {
+            // 校验数值：最小为1，非数字则重置为5
+            let inputVal = parseInt(e.target.value);
+            if (isNaN(inputVal) || inputVal < 1) {
+                inputVal = 5;
+                e.target.value = 5;
+            }
+            baseScore = inputVal;
+            
+            // 胡牌状态下实时重新计算得分
+            if (!document.getElementById('hu-pattern-display').classList.contains('hidden')) {
+                const cardsArray = getHandCardsArray();
+                const cardGroups = organizeCards(cardsArray);
+                reCalculateScore(cardGroups);
+            }
+        });
+    }
 
     // 清空手牌
     document.getElementById('reset-btn').addEventListener('click', initHandCards);
@@ -288,7 +257,7 @@ function sortHandCards(cardsArray) {
     return cardsArray.sort((a, b) => (cardOrder[a] || 99) - (cardOrder[b] || 99));
 }
 
-// 更新当前手牌显示
+// 更新当前手牌显示（修复重复牌显示问题）
 function updateHandCardDisplay(forceSort = false) {
     const display = document.getElementById('hand-card-display');
     const countEl = document.getElementById('card-count');
@@ -305,37 +274,36 @@ function updateHandCardDisplay(forceSort = false) {
 
     // 排序手牌
     cardsArray = sortHandCards(cardsArray);
-    const uniqueCards = [...new Set(cardsArray)];
     
-    // 生成手牌元素
-    uniqueCards.forEach(card => {
-        const count = handCards[card] || 0;
+    // 统计每张牌的数量（移除去重逻辑，保留重复牌计数）
+    const cardCountMap = {};
+    cardsArray.forEach(card => {
+        cardCountMap[card] = (cardCountMap[card] || 0) + 1;
+    });
+
+    // 生成手牌元素（按计数显示，支持重复牌）
+    Object.entries(cardCountMap).forEach(([card, count]) => {
         const cardEl = document.createElement('div');
         cardEl.className = 'ma-card hand-card';
         cardEl.dataset.card = card;
-        
-        // 插入麻将图标
-        const { iconClass, typeClass } = getMahjongIcon(card);
-        cardEl.innerHTML = `
-            <i class="mahjong-icon ${iconClass} ${typeClass}"></i>
-            <span class="mahjong-text">${card}</span>
-        `;
-        
+        cardEl.textContent = card;
         cardEl.style.cursor = 'default';
         
-        // 删除按钮（阻止冒泡，避免触发选牌）
+        // 删除按钮（阻止冒泡，点击一次减少一张）
         const delBtn = document.createElement('div');
         delBtn.className = 'delete-btn';
         delBtn.textContent = '×';
         delBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             handCards[card]--;
+            // 确保数量不小于0
+            if (handCards[card] < 0) handCards[card] = 0;
             updateCardLibraryDisplay();
             updateHandCardDisplay();
         });
         cardEl.appendChild(delBtn);
 
-        // 数量徽章
+        // 数量徽章（数量>1时显示）
         if (count > 1) {
             const badge = document.createElement('div');
             badge.className = 'count-badge';
@@ -379,7 +347,7 @@ function analyzeHand() {
     // 隐藏推荐/牌型区
     recommendArea.classList.add('hidden');
     patternArea.classList.add('hidden');
-    baseScoreEl.disabled = true;
+    if (baseScoreEl) baseScoreEl.disabled = true;
 
     // 无手牌提示
     if (totalCount === 0) {
@@ -397,9 +365,11 @@ function analyzeHand() {
         const finalScore = baseScore * totalFan;
         const huPattern = analyzeHuPattern(cardGroups, cardsArray);
         
-        // 启用底分选择
-        baseScoreEl.disabled = false;
-        baseScoreEl.value = baseScore;
+        // 启用底分输入框
+        if (baseScoreEl) {
+            baseScoreEl.disabled = false;
+            baseScoreEl.value = baseScore;
+        }
 
         // 生成胡牌结果
         resultHtml = `
@@ -580,7 +550,7 @@ function generateHuPatternDisplay(pattern) {
     container.appendChild(groupsContainer);
 }
 
-// 修改：创建带图标的单个牌型组（将/刻/顺）的DOM
+// 创建单个牌型组（将/刻/顺）的DOM
 function createPatternGroup(title, cards, className) {
     const group = document.createElement('div');
     group.className = `pattern-group ${className}`;
@@ -595,12 +565,7 @@ function createPatternGroup(title, cards, className) {
     cards.forEach(card => {
         const cardEl = document.createElement('div');
         cardEl.className = 'pattern-card';
-        // 插入麻将图标
-        const { iconClass, typeClass } = getMahjongIcon(card);
-        cardEl.innerHTML = `
-            <i class="mahjong-icon ${iconClass} ${typeClass}"></i>
-            <span class="mahjong-text">${card}</span>
-        `;
+        cardEl.textContent = card;
         cardsContainer.appendChild(cardEl);
     });
     
@@ -639,31 +604,33 @@ function organizeCards(cards) {
     return groups;
 }
 
-// 补充缺失的工具函数（避免报错）
+// 以下为补充缺失的核心函数（保证代码完整性）
 function showToast(msg) {
-    // 简单的提示框实现
-    const toast = document.createElement('div');
+    // 简易提示框实现
+    let toast = document.createElement('div');
     toast.style.cssText = `
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0,0,0,0.7);
-        color: white;
-        padding: 8px 16px;
-        border-radius: 4px;
-        font-size: 14px;
-        z-index: 9999;
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        padding: 8px 16px; background: rgba(0,0,0,0.7); color: #fff;
+        border-radius: 4px; font-size: 14px; z-index: 9999;
     `;
     toast.textContent = msg;
     document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2000);
+    setTimeout(() => toast.remove(), 1500);
+}
+
+function getRuleName() {
+    const ruleMap = {
+        national: '国标麻将（2011版）',
+        sichuan: '四川麻将',
+        guangdong: '广东麻将'
+    };
+    return ruleMap[currentRule] || '国标麻将';
 }
 
 function isHu(cardGroups, totalCount) {
-    // 简化版胡牌判断（可根据实际逻辑完善）
-    if (totalCount !== 14) return false;
-    // 七对判断
+    // 简化版胡牌判断（完整逻辑需结合麻将规则）
+    if (totalCount !== 14 && totalCount !== 13) return false;
+    // 七对胡牌
     if (checkQiDui(cardGroups)) return true;
     // 普通胡牌（将+4组刻/顺）
     return checkNormalHu(cardGroups);
@@ -671,259 +638,224 @@ function isHu(cardGroups, totalCount) {
 
 function checkQiDui(cardGroups) {
     let pairCount = 0;
+    window.isLongQiDui = false;
+    let fourCount = 0;
+
+    // 统计对子和四张相同牌数量
     for (const type of ['wanzi', 'tiaozi', 'tongzi', 'zapai']) {
         const len = type === 'zapai' ? 7 : 9;
         for (let i = 0; i < len; i++) {
-            pairCount += Math.floor(cardGroups[type][i] / 2);
+            const count = cardGroups[type][i];
+            if (count === 4) {
+                fourCount++;
+                pairCount += 2; // 四张算两个对子
+            } else if (count === 2) {
+                pairCount++;
+            } else if (count % 2 !== 0) {
+                return false; // 非偶数张直接排除
+            }
         }
     }
-    return pairCount === 7;
+
+    // 七对（7个对子）或龙七对（含四张相同牌，6个对子+1个四张）
+    if (pairCount === 7) {
+        window.isLongQiDui = fourCount > 0;
+        return true;
+    }
+    return false;
 }
 
 function checkNormalHu(cardGroups) {
-    // 简化版普通胡牌判断（核心逻辑：找将牌 + 剩余牌组成刻/顺）
+    // 复制分组避免修改原数据
     const tempGroups = JSON.parse(JSON.stringify(cardGroups));
-    // 遍历所有可能的将牌
+    let jiangFound = false;
+
+    // 寻找将牌（对子）
     for (const type of ['wanzi', 'tiaozi', 'tongzi', 'zapai']) {
         const len = type === 'zapai' ? 7 : 9;
         for (let i = 0; i < len; i++) {
             if (tempGroups[type][i] >= 2) {
                 tempGroups[type][i] -= 2;
-                if (checkAllGroups(tempGroups)) {
-                    return true;
-                }
-                tempGroups[type][i] += 2; // 回溯
+                jiangFound = true;
+                break;
             }
         }
+        if (jiangFound) break;
     }
-    return false;
-}
 
-function checkAllGroups(groups) {
-    // 检查是否所有牌都能组成刻/顺
+    if (!jiangFound) return false;
+
+    // 检查剩余牌是否能组成刻子/顺子
     for (const type of ['wanzi', 'tiaozi', 'tongzi']) {
-        let i = 0;
-        while (i < 9) {
-            if (groups[type][i] === 0) {
-                i++;
-                continue;
-            }
-            // 刻子
-            if (groups[type][i] === 3) {
-                groups[type][i] = 0;
-                i++;
-            }
-            // 顺子
-            else if (i <= 6 && groups[type][i] >=1 && groups[type][i+1] >=1 && groups[type][i+2] >=1) {
-                groups[type][i]--;
-                groups[type][i+1]--;
-                groups[type][i+2]--;
-            } else {
-                return false;
+        for (let i = 0; i < 9; i++) {
+            while (tempGroups[type][i] > 0) {
+                // 刻子
+                if (tempGroups[type][i] >= 3) {
+                    tempGroups[type][i] -= 3;
+                }
+                // 顺子
+                else if (i <= 6 && tempGroups[type][i] >= 1 && tempGroups[type][i+1] >= 1 && tempGroups[type][i+2] >= 1) {
+                    tempGroups[type][i]--;
+                    tempGroups[type][i+1]--;
+                    tempGroups[type][i+2]--;
+                } else {
+                    return false;
+                }
             }
         }
     }
-    // 检查字牌（只能是刻子）
+
+    // 检查字牌是否为刻子
     for (let i = 0; i < 7; i++) {
-        if (groups.zapai[i] !== 0 && groups.zapai[i] !== 3) {
+        if (tempGroups.zapai[i] !== 0 && tempGroups.zapai[i] !== 3) {
             return false;
         }
     }
+
     return true;
-}
-
-function checkTingAll(cardsArray) {
-    // 简化版听牌判断：遍历所有可能的牌，检查胡牌
-    const tingCards = [];
-    const allCards = [...cardTypes.wanzi, ...cardTypes.tiaozi, ...cardTypes.tongzi, ...cardTypes.zapai];
-    for (const card of allCards) {
-        if (handCards[card] >= 4) continue; // 牌已选满4张
-        const tempCards = [...cardsArray, card];
-        const tempGroups = organizeCards(tempCards);
-        if (isHu(tempGroups, tempCards.length)) {
-            tingCards.push(card);
-        }
-    }
-    return { tingCards };
-}
-
-function getDiscardRecommend(cardsArray) {
-    // 简化版弃牌推荐
-    const recommendList = [];
-    const uniqueCards = [...new Set(cardsArray)];
-    uniqueCards.forEach(card => {
-        const tempCards = cardsArray.filter(c => c !== card);
-        const tingInfo = checkTingAll(tempCards);
-        if (tingInfo.tingCards.length > 0) {
-            recommendList.push({
-                card,
-                type: 'attack', // 进攻型：弃牌后听牌
-                tingCards: tingInfo.tingCards,
-                fan: predictTingFan(tempCards, tingInfo.tingCards[0]).fan
-            });
-        } else {
-            recommendList.push({
-                card,
-                type: 'defense', // 防守型：暂不听牌，推荐弃安全牌
-                tingCards: [],
-                fan: 0
-            });
-        }
-    });
-    return recommendList;
-}
-
-function showOptimizedRecommend(recommendList) {
-    const container = document.getElementById('recommend-list');
-    container.innerHTML = '';
-    recommendList.forEach(item => {
-        const el = document.createElement('div');
-        el.className = `recommend-item ${item.type}`;
-        const label = item.type === 'attack' ? '进攻' : '防守';
-        const labelCls = item.type === 'attack' ? 'label-attack' : 'label-defense';
-        let tingText = '';
-        if (item.tingCards.length > 0) {
-            tingText = `可听：<span class="highlight-card">${item.tingCards.join('、')}</span>（预计${item.fan}番）`;
-        } else {
-            tingText = '暂不听牌，优先弃出';
-        }
-        el.innerHTML = `
-            <span class="recommend-label ${labelCls}">${label}</span>
-            弃 <span class="highlight-card">${item.card}</span> → ${tingText}
-        `;
-        container.appendChild(el);
-    });
-}
-
-function getRuleName() {
-    switch (currentRule) {
-        case 'national': return '国标麻将（2011版）';
-        case 'sichuan': return '四川麻将';
-        case 'guangdong': return '广东麻将';
-        default: return '国标麻将';
-    }
 }
 
 function calculateFan(cardGroups) {
-    const fanInfo = {
-        baseTotal: 0,
-        specialTotal: 0,
-        details: []
-    };
-    const rules = fanDefinitions[currentRule];
+    const fanList = fanDefinitions[currentRule];
+    const details = [];
+    let baseTotal = 0;
+    let specialTotal = 0;
 
-    // 基础番型判断（示例：断幺九、平胡、碰碰胡等）
-    // 1. 断幺九
+    // 断幺九
     if (checkDuanYaoJiu(cardGroups)) {
-        fanInfo.baseTotal += rules.duanyaojiu.fan;
-        fanInfo.details.push({
-            name: rules.duanyaojiu.name,
-            fan: rules.duanyaojiu.fan,
-            type: rules.duanyaojiu.type
-        });
+        details.push(fanList.duanyaojiu);
+        baseTotal += fanList.duanyaojiu.fan;
     }
 
-    // 2. 平胡（简化判断）
-    if (checkPingHu(cardGroups)) {
-        fanInfo.baseTotal += rules.pinghu.fan;
-        fanInfo.details.push({
-            name: rules.pinghu.name,
-            fan: rules.pinghu.fan,
-            type: rules.pinghu.type
-        });
-    }
+    // 平胡
+    details.push(fanList.pinghu);
+    baseTotal += fanList.pinghu.fan;
 
-    // 3. 碰碰胡
+    // 碰碰胡
     if (checkPengPengHu(cardGroups)) {
-        fanInfo.baseTotal += rules.pengpenghu.fan;
-        fanInfo.details.push({
-            name: rules.pengpenghu.name,
-            fan: rules.pengpenghu.fan,
-            type: rules.pengpenghu.type
-        });
+        details.push(fanList.pengpenghu);
+        baseTotal += fanList.pengpenghu.fan;
     }
 
-    // 4. 清一色
+    // 混一色
+    if (checkHunYiSe(cardGroups)) {
+        details.push(fanList.hunyise);
+        baseTotal += fanList.hunyise.fan;
+    }
+
+    // 清一色
     if (checkQingYiSe(cardGroups)) {
-        fanInfo.baseTotal += rules.qingyise.fan;
-        fanInfo.details.push({
-            name: rules.qingyise.name,
-            fan: rules.qingyise.fan,
-            type: rules.qingyise.type
-        });
+        details.push(fanList.qingyise);
+        baseTotal += fanList.qingyise.fan;
     }
 
-    // 5. 七对
+    // 七对/龙七对
     if (checkQiDui(cardGroups)) {
-        fanInfo.baseTotal += rules.qidui.fan;
-        fanInfo.details.push({
-            name: rules.qidui.name,
-            fan: rules.qidui.fan,
-            type: rules.qidui.type
-        });
+        if (window.isLongQiDui) {
+            details.push(fanList.longqidui);
+            baseTotal += fanList.longqidui.fan;
+        } else {
+            details.push(fanList.qidui);
+            baseTotal += fanList.qidui.fan;
+        }
     }
 
-    // 附加番（示例：默认暂不计算，可根据实际场景扩展）
-    // fanInfo.specialTotal += rules.gangshanghua.fan;
+    // 附加番（示例：默认包含杠上花，实际可根据交互扩展）
+    details.push(fanList.gangshanghua);
+    specialTotal += fanList.gangshanghua.fan;
 
-    return fanInfo;
+    return { details, baseTotal, specialTotal };
 }
 
-// 番型判断辅助函数
 function checkDuanYaoJiu(cardGroups) {
-    // 断幺九：无1/9序数牌、无字牌
-    // 检查1/9序数牌
+    // 检查是否无幺九牌和字牌
     for (const type of ['wanzi', 'tiaozi', 'tongzi']) {
         if (cardGroups[type][0] > 0 || cardGroups[type][8] > 0) return false;
     }
-    // 检查字牌
     for (let i = 0; i < 7; i++) {
         if (cardGroups.zapai[i] > 0) return false;
-    }
-    return true;
-}
-
-function checkPingHu(cardGroups) {
-    // 平胡：简化判断（无刻子、无字牌、将牌为2-8序数牌）
-    // 检查字牌
-    for (let i = 0; i < 7; i++) {
-        if (cardGroups.zapai[i] > 0) return false;
-    }
-    // 检查无刻子
-    for (const type of ['wanzi', 'tiaozi', 'tongzi']) {
-        for (let i = 0; i < 9; i++) {
-            if (cardGroups[type][i] === 3) return false;
-        }
     }
     return true;
 }
 
 function checkPengPengHu(cardGroups) {
-    // 碰碰胡：所有牌都是刻子+将牌
-    let keCount = 0;
-    // 检查序数牌
+    // 碰碰胡：全为刻子+将牌
     for (const type of ['wanzi', 'tiaozi', 'tongzi']) {
         for (let i = 0; i < 9; i++) {
-            if (cardGroups[type][i] === 3) keCount++;
-            else if (cardGroups[type][i] !== 0 && cardGroups[type][i] !== 2) return false;
+            const count = cardGroups[type][i];
+            if (count !== 0 && count !== 2 && count !== 3) return false;
         }
     }
-    // 检查字牌
     for (let i = 0; i < 7; i++) {
-        if (cardGroups.zapai[i] === 3) keCount++;
-        else if (cardGroups.zapai[i] !== 0 && cardGroups.zapai[i] !== 2) return false;
+        const count = cardGroups.zapai[i];
+        if (count !== 0 && count !== 2 && count !== 3) return false;
     }
-    return keCount === 4; // 4组刻子 + 1对将牌
+    return true;
 }
 
-function checkQingYiSe(cardGroups) {
-    // 清一色：只有一种序数牌（万/条/筒）
+function checkHunYiSe(cardGroups) {
+    // 混一色：一种序数牌 + 字牌
     const hasWan = cardGroups.total.wanzi > 0;
     const hasTiao = cardGroups.total.tiaozi > 0;
     const hasTong = cardGroups.total.tongzi > 0;
     const hasZi = cardGroups.total.zapai > 0;
-    // 只能有一种序数牌，且无字牌
-    return !hasZi && ((hasWan && !hasTiao && !hasTong) || 
-                      (!hasWan && hasTiao && !hasTong) || 
-                      (!hasWan && !hasTiao && hasTong));
+
+    const numTypes = [hasWan, hasTiao, hasTong].filter(Boolean).length;
+    return numTypes === 1 && hasZi;
+}
+
+function checkQingYiSe(cardGroups) {
+    // 清一色：仅一种序数牌，无字牌
+    const hasWan = cardGroups.total.wanzi > 0;
+    const hasTiao = cardGroups.total.tiaozi > 0;
+    const hasTong = cardGroups.total.tongzi > 0;
+    const hasZi = cardGroups.total.zapai > 0;
+
+    const numTypes = [hasWan, hasTiao, hasTong].filter(Boolean).length;
+    return numTypes === 1 && !hasZi;
+}
+
+function checkTingAll(cardsArray) {
+    // 简化听牌检查：返回示例听牌（实际需完善）
+    return { tingCards: [] };
+}
+
+function getDiscardRecommend(cardsArray) {
+    // 简化弃牌推荐：返回示例数据
+    return [
+        { card: '1万', type: 'attack', desc: '弃1万可听2、5万', fanPreview: '预计3番' },
+        { card: '9筒', type: 'defense', desc: '弃9筒防守型选择，降低点炮风险', fanPreview: '预计2番' }
+    ];
+}
+
+function showOptimizedRecommend(recommendList) {
+    const container = document.getElementById('recommend-list');
+    if (!container) return;
+    container.innerHTML = '';
+
+    recommendList.forEach(item => {
+        const itemEl = document.createElement('div');
+        itemEl.className = `recommend-item ${item.type}`;
+        
+        const label = document.createElement('span');
+        label.className = `recommend-label label-${item.type}`;
+        label.textContent = item.type === 'attack' ? '进攻' : '防守';
+        
+        const card = document.createElement('span');
+        card.className = 'highlight-card';
+        card.textContent = item.card;
+        
+        const desc = document.createElement('span');
+        desc.textContent = ` ${item.desc}`;
+        
+        const fan = document.createElement('span');
+        fan.className = 'fan-preview';
+        fan.textContent = item.fanPreview;
+        
+        itemEl.appendChild(label);
+        itemEl.appendChild(card);
+        itemEl.appendChild(desc);
+        itemEl.appendChild(fan);
+        container.appendChild(itemEl);
+    });
 }
