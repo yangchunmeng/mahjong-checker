@@ -34,6 +34,7 @@
                     <p class="mb-1"><strong>基本胡牌条件：</strong>手牌满足 (n-2) 是3的倍数（普通胡牌）或 14张七对</p>
                     <p class="mb-1"><strong>普通胡牌结构：</strong>将牌（对子）+ 4组刻子/顺子（每组3张）</p>
                     <p class="mb-1"><strong>七对胡牌结构：</strong>7个对子（龙七对包含四张相同牌）</p>
+                    <p class="mb-1"><strong>杠/碰规则：</strong>明杠、暗杠、碰牌可同时进行，碰牌形成刻子计入胡牌结构，杠牌（明/暗）额外计番且不影响胡牌基础结构</p>
                 </div>
             </div>
 
@@ -50,6 +51,7 @@
                         <li>碰碰胡：6番 | 清一色：24番 | 七对：6番 | 龙七对：16番</li>
                         <li>杠上花：8番（附加番） | 海底捞月：8番（附加番）</li>
                     </ul>
+                    <p class="text-gray-600 text-xs mt-1">注：明杠/暗杠可与碰牌、其他番型叠加计算，碰牌形成的刻子可参与碰碰胡等番型判定</p>
                 </div>
             </div>
 
@@ -65,6 +67,7 @@
                         <li>清一色：4番 | 七对：4番 | 龙七对：8番</li>
                         <li>杠上花：1番（附加番） | 海底捞月：1番（附加番）</li>
                     </ul>
+                    <p class="text-gray-600 text-xs mt-1">注：定缺规则下仍可正常进行杠/碰操作，杠牌番数独立叠加，碰牌不影响定缺判定</p>
                 </div>
             </div>
 
@@ -80,6 +83,7 @@
                         <li>清一色：5番 | 七对：5番 | 龙七对：10番</li>
                         <li>杠上花：2番 | 海底捞月：2番 | 自摸：1番（均为附加番）</li>
                     </ul>
+                    <p class="text-gray-600 text-xs mt-1">注：明杠/暗杠、碰牌可同时存在，自摸番数与杠/碰番型无冲突，均可叠加</p>
                 </div>
             </div>
 
@@ -91,11 +95,11 @@
                 <div class="pl-2 flex flex-col gap-2 text-sm text-gray-700">
                     <div class="mb-2">
                         <p class="font-medium">杠上花/海底捞月（附加番）：</p>
-                        <p class="text-gray-600">杠牌/摸最后一张牌胡牌，额外叠加番数，可叠加计算</p>
+                        <p class="text-gray-600">杠牌/摸最后一张牌胡牌，额外叠加番数，可与明杠/暗杠/碰牌番型叠加计算</p>
                     </div>
                     <div class="p-2 bg-blue-50 rounded-lg mt-2">
-                        <p class="font-medium text-blue-800 text-sm">计分规则：最终得分 = 底分 × 总番数（基础番+附加番）</p>
-                        <p class="text-gray-700 text-xs mt-1">✅ 默认底分5 | 示例：底分5 + 基础3番 + 杠上花8番 → 5×11=55分</p>
+                        <p class="font-medium text-blue-800 text-sm">计分规则：最终得分 = 底分 × 总番数（基础番+附加番+杠/碰番）</p>
+                        <p class="text-gray-700 text-xs mt-1">✅ 示例：底分5 + 基础3番 + 明杠1番 + 杠上花8番 → 5×12=60分</p>
                     </div>
                 </div>
             </div>
