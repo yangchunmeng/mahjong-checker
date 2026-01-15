@@ -49,14 +49,17 @@
                         <option value="guangdong">广东麻将</option>
                     </select>
                 </div>
-                <!-- 底分设置（默认5，胡牌后启用） -->
+                <!-- 底分设置（替换下拉框为输入框） -->
                 <div class="flex items-center gap-2">
                     <label class="font-medium min-w-[100px] text-gray-700">底分：</label>
-                    <select id="base-score" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500" disabled>
-                        <option value="1">1</option>
-                        <option value="5" selected>5</option>
-                        <option value="10">10</option>
-                    </select>
+                    <input 
+                        type="number" 
+                        id="base-score" 
+                        class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500" 
+                        disabled
+                        min="1" 
+                        value="5"
+                    >
                 </div>
                 <!-- 四川麻约定缺（默认隐藏） -->
                 <div id="sichuan-options" class="hidden flex items-center gap-2">
