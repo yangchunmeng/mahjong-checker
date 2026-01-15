@@ -2,133 +2,112 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>麻将规则说明 - 麻将胡牌听牌分析器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>麻将规则 - 手机版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { touch-action: manipulation; }
+        body { font-size: 14px; }
+        .container { padding: 16px 8px !important; }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-5xl">
-        <!-- 导航栏 -->
-        <nav class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">麻将规则说明</h1>
+    <div class="container mx-auto px-2 py-4 max-w-full">
+        <!-- 导航栏 - 手机端精简 -->
+        <nav class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">麻将规则说明</h1>
             <div>
-                <a href="index.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                    <i class="fas fa-arrow-left mr-2"></i>返回分析页面
+                <a href="index.html" class="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition text-sm">
+                    <i class="fas fa-arrow-left mr-1"></i>返回
                 </a>
             </div>
         </nav>
 
-        <!-- 规则说明主体 -->
-        <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-            <h2 class="text-2xl font-bold mb-6 text-center border-b pb-3">麻将规则详解</h2>
+        <!-- 规则说明主体 - 手机端紧凑排版 -->
+        <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+            <h2 class="text-xl font-bold mb-4 text-center border-b pb-2">麻将规则（手机版）</h2>
 
             <!-- 通用规则 -->
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold mb-4 text-blue-600">
-                    <i class="fas fa-star mr-2"></i>通用胡牌规则
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold mb-2 text-blue-600">
+                    <i class="fas fa-star mr-1"></i>通用胡牌规则
                 </h3>
-                <div class="pl-4">
-                    <p class="mb-2"><strong>基本胡牌条件：</strong>手牌满足 (n-2) 是3的倍数（普通胡牌）或 14张七对</p>
-                    <p class="mb-2"><strong>普通胡牌结构：</strong>将牌（对子）+ 4组刻子/顺子（每组3张）</p>
-                    <p class="mb-2"><strong>七对胡牌结构：</strong>7个对子（龙七对包含四张相同牌）</p>
-                    <p><strong>刻子：</strong>三张相同的牌（如 1万1万1万）</p>
-                    <p><strong>顺子：</strong>三张连续的序数牌（如 1万2万3万）</p>
+                <div class="pl-2 text-sm">
+                    <p class="mb-1"><strong>基本条件：</strong>手牌13张听牌，14张胡牌；七对为14张直接胡牌</p>
+                    <p class="mb-1"><strong>普通胡牌：</strong>将牌（1对）+ 4组刻子/顺子（每组3张）</p>
+                    <p class="mb-1"><strong>七对胡牌：</strong>7个对子（龙七对含四张相同牌）</p>
+                    <p class="text-red-500 font-medium">核心番型：断幺九（无1/9/字牌，全规则1番）</p>
                 </div>
             </div>
 
             <!-- 国标麻将 -->
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold mb-4 text-red-600">
-                    <i class="fas fa-flag mr-2"></i>国标麻将规则
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold mb-2 text-red-600">
+                    <i class="fas fa-flag mr-1"></i>国标麻将（2011官方）
                 </h3>
-                <div class="pl-4">
-                    <p class="font-medium mb-2">番型及番数：</p>
-                    <ul class="list-disc list-inside mb-4 space-y-1">
-                        <li>平胡：1番</li>
-                        <li>碰碰胡：4番</li>
-                        <li>混一色：2番</li>
-                        <li>清一色：6番</li>
-                        <li>七对：4番</li>
-                        <li>龙七对：8番</li>
-                        <li>杠上花：8番</li>
-                        <li>海底捞月：8番</li>
-                        <li>一条龙：3番</li>
+                <div class="pl-2 text-sm">
+                    <p class="font-medium mb-1">番型及番数：</p>
+                    <ul class="list-disc list-inside mb-2 space-y-0.5">
+                        <li>平胡/断幺九/幺九刻/门清：1番</li>
+                        <li>平和/明杠：2番 | 暗杠：2番 | 混一色/碰碰胡：6番</li>
+                        <li>七对：6番 | 清一色：24番 | 龙七对：16番</li>
+                        <li>杠上花/海底捞月：8番（附加番，直接叠加）</li>
                     </ul>
-                    <p class="text-gray-600"><strong>特点：</strong>支持字牌，番数计算严格，胡牌条件宽松</p>
                 </div>
             </div>
 
             <!-- 四川麻将 -->
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold mb-4 text-green-600">
-                    <i class="fas fa-flag mr-2"></i>四川麻将规则
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold mb-2 text-green-600">
+                    <i class="fas fa-flag mr-1"></i>四川麻将
                 </h3>
-                <div class="pl-4">
-                    <p class="font-medium mb-2">番型及番数：</p>
-                    <ul class="list-disc list-inside mb-4 space-y-1">
-                        <li>平胡：1番</li>
-                        <li>碰碰胡：2番</li>
-                        <li>混一色：2番</li>
-                        <li>清一色：4番</li>
-                        <li>七对：4番</li>
-                        <li>龙七对：8番</li>
-                        <li>杠上花：1番</li>
-                        <li>海底捞月：1番</li>
+                <div class="pl-2 text-sm">
+                    <p class="font-medium mb-1">番型及番数：</p>
+                    <ul class="list-disc list-inside mb-2 space-y-0.5">
+                        <li>平胡/断幺九：1番 | 碰碰胡/混一色：2番</li>
+                        <li>清一色：4番 | 七对：4番 | 龙七对：8番</li>
+                        <li>杠上花/海底捞月：1番（附加番）</li>
                     </ul>
-                    <p class="mb-2 text-gray-600"><strong>特点：</strong>无门风字牌，定缺规则（必须缺一门），血战到底</p>
-                    <p class="text-gray-600"><strong>定缺：</strong>游戏开始前选择缺万/条/筒，手牌中不能有对应牌型</p>
+                    <p class="text-gray-600"><strong>定缺规则：</strong>必须缺万/条/筒其中一门</p>
                 </div>
             </div>
 
             <!-- 广东麻将 -->
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold mb-4 text-yellow-600">
-                    <i class="fas fa-flag mr-2"></i>广东麻将规则
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold mb-2 text-yellow-600">
+                    <i class="fas fa-flag mr-1"></i>广东麻将
                 </h3>
-                <div class="pl-4">
-                    <p class="font-medium mb-2">番型及番数：</p>
-                    <ul class="list-disc list-inside mb-4 space-y-1">
-                        <li>平胡：1番</li>
-                        <li>碰碰胡：3番</li>
-                        <li>混一色：2番</li>
-                        <li>清一色：5番</li>
-                        <li>七对：5番</li>
-                        <li>龙七对：10番</li>
-                        <li>杠上花：2番</li>
-                        <li>海底捞月：2番</li>
-                        <li>自摸：1番</li>
+                <div class="pl-2 text-sm">
+                    <p class="font-medium mb-1">番型及番数：</p>
+                    <ul class="list-disc list-inside mb-2 space-y-0.5">
+                        <li>平胡/断幺九/自摸：1番 | 混一色：2番 | 碰碰胡：3番</li>
+                        <li>清一色/七对：5番 | 龙七对：10番</li>
+                        <li>杠上花/海底捞月：2番（附加番）</li>
                     </ul>
-                    <p class="text-gray-600"><strong>特点：</strong>支持字牌，讲究鸡胡、平胡、爆胡，番数累积</p>
                 </div>
             </div>
 
-            <!-- 特殊番型说明 -->
+            <!-- 特殊番型说明 - 手机端单列 -->
             <div>
-                <h3 class="text-xl font-semibold mb-4 text-purple-600">
-                    <i class="fas fa-trophy mr-2"></i>特殊番型说明
+                <h3 class="text-lg font-semibold mb-2 text-purple-600">
+                    <i class="fas fa-trophy mr-1"></i>核心番型说明
                 </h3>
-                <div class="pl-4">
-                    <div class="mb-3">
-                        <p class="font-medium">杠上花：</p>
-                        <p class="text-gray-600">杠牌后摸牌胡牌，额外加番</p>
-                    </div>
-                    <div class="mb-3">
-                        <p class="font-medium">海底捞月：</p>
-                        <p class="text-gray-600">摸最后一张牌胡牌，额外加番</p>
-                    </div>
-                    <div class="mb-3">
-                        <p class="font-medium">清一色：</p>
-                        <p class="text-gray-600">手牌只有万/条/筒中的一种，无字牌</p>
-                    </div>
-                    <div class="mb-3">
-                        <p class="font-medium">混一色：</p>
-                        <p class="text-gray-600">手牌只有一种序数牌 + 字牌</p>
+                <div class="pl-2 text-sm space-y-2">
+                    <div>
+                        <p class="font-medium">断幺九（1番）：</p>
+                        <p class="text-gray-600">无1/9序数牌、无字牌，国标基础核心番</p>
                     </div>
                     <div>
-                        <p class="font-medium">龙七对：</p>
-                        <p class="text-gray-600">七对中有四张相同的牌（算两对）</p>
+                        <p class="font-medium">杠上花/海底捞月（附加番）：</p>
+                        <p class="text-gray-600">胡牌时直接叠加番数，不影响基础番型</p>
+                    </div>
+                    <div class="mt-2 p-2 bg-blue-50 rounded-lg">
+                        <p class="font-medium text-blue-800 text-sm">计分公式：最终得分 = 底分 × 总番数（基础+附加）</p>
+                        <p class="text-gray-700 text-xs">例：底分5 + 基础3番 + 杠上花8番 → 5×11=55分</p>
                     </div>
                 </div>
             </div>
