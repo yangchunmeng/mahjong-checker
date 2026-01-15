@@ -74,27 +74,12 @@ function generateCardLibrary() {
     }
 }
 
-// 创建麻将牌元素（美化版）
+// 创建麻将牌元素（极简样式）
 function createCardElement(card, type) {
     const cardEl = document.createElement('div');
     cardEl.className = 'ma-card';
     cardEl.dataset.card = card;
-
-    // 不同牌型的样式区分
-    if (type === 'tiaozi') {
-        const num = card.replace('条', '');
-        let icon = '';
-        if (num === '1') icon = '<i class="fas fa-dragon"></i>';
-        else if (num === '2') icon = '<i class="fas fa-bicycle"></i>';
-        else icon = '<i class="fas fa-futbol"></i>';
-        cardEl.innerHTML = `${icon}<span class="tiao-text">${card}</span>`;
-        cardEl.classList.add('tiao-card');
-    } else if (type === 'zapai') {
-        cardEl.innerHTML = `<span class="zi-card">${card}</span>`;
-        cardEl.classList.add('zi-card');
-    } else {
-        cardEl.textContent = card;
-    }
+    cardEl.textContent = card;
 
     // 点击添加手牌（最多4张）
     cardEl.addEventListener('click', () => {
@@ -341,13 +326,13 @@ function analyzeHand() {
                 <div class="mt-2 text-sm text-gray-500">当前规则：${getRuleName()}</div>
             `;
         } else {
-            // 未听牌，推荐弃牌
+            // 未听牌，推荐弃牌（优化版）
             const recommendList = getDiscardRecommend(cardsArray);
             resultHtml = `
                 <div class="text-orange-600 font-medium mb-2">未听牌</div>
                 <div>推荐以下弃牌策略：</div>
             `;
-            showDiscardRecommend(recommendList);
+            showOptimizedRecommend(recommendList); // 使用优化后的推荐展示
             recommendArea.classList.remove('hidden');
         }
     }
@@ -563,6 +548,7 @@ function organizeCards(cards) {
         } else if (card.includes('筒')) {
             const idx = parseInt(card) - 1;
             groups.tongzi[idx]++;
+            groupsongzi[idx]++;
             groups.total.tongzi++;
         } else {
             const idx = zapaiMap[card];
@@ -639,111 +625,3 @@ function calculateFan(cardGroups) {
 
     if (window.isLongQiDui) {
         details.push(rules.longqidui);
-        total += rules.longqidui.fan;
-    } else if (checkQiDui(cardGroups)) {
-        details.push(rules.qidui);
-        total += rules.qidui.fan;
-    } else {
-        details.push(rules.pinghu);
-        total += rules.pinghu.fan;
-        if (isPengPengHu(cardGroups)) { details.push(rules.pengpenghu); total += rules.pengpenghu.fan; }
-        if (isQingYiSe(cardGroups)) { details.push(rules.qingyise); total += rules.qingyise.fan; }
-        else if (isHunYiSe(cardGroups)) { details.push(rules.hunyise); total += rules.hunyise.fan; }
-    }
-
-    if (specialFlags.gangshanghua) { details.push(rules.gangshanghua); total += rules.gangshanghua.fan; }
-    if (specialFlags.haidilaoyue) { details.push(rules.haidilaoyue); total += rules.haidilaoyue.fan; }
-
-    return { total, details };
-}
-
-// 判断碰碰胡/清一色/混一色
-function isPengPengHu(groups) {
-    for (const type of ['wanzi', 'tiaozi', 'tongzi']) {
-        for (let i = 0; i < 9; i++) {
-            if (groups[type][i] !== 0 && groups[type][i] !== 3) return false;
-        }
-    }
-    for (let i = 0; i < 7; i++) {
-        if (groups.zapai[i] !== 0 && groups.zapai[i] !== 3) return false;
-    }
-    return true;
-}
-function isQingYiSe(groups) {
-    const { wanzi, tiaozi, tongzi, zapai } = groups.total;
-    return zapai === 0 && (wanzi > 0 && tiaozi === 0 && tongzi === 0 ||
-                           tiaozi > 0 && wanzi === 0 && tongzi === 0 ||
-                           tongzi > 0 && wanzi === 0 && tiaozi === 0);
-}
-function isHunYiSe(groups) {
-    const { wanzi, tiaozi, tongzi, zapai } = groups.total;
-    if (zapai === 0) return false;
-    const suitCount = [wanzi > 0, tiaozi > 0, tongzi > 0].filter(Boolean).length;
-    return suitCount === 1;
-}
-
-// 检查听牌（所有可能）
-function checkTingAll(cardsArray) {
-    const allCards = [...cardTypes.wanzi, ...cardTypes.tiaozi, ...cardTypes.tongzi, ...cardTypes.zapai];
-    const tingCards = [];
-
-    allCards.forEach(card => {
-        if (handCards[card] >= 4) return;
-        if (isLackCard(card)) return;
-        const tempCards = [...cardsArray, card];
-        const tempGroups = organizeCards(tempCards);
-        if (isHu(tempGroups, tempCards.length)) tingCards.push(card);
-    });
-
-    return { tingCards };
-}
-
-// 弃牌听牌推荐
-function getDiscardRecommend(cardsArray) {
-    const recommendList = [];
-    const uniqueCards = [...new Set(cardsArray)];
-
-    uniqueCards.forEach(discardCard => {
-        if (handCards[discardCard] === 0) return;
-        // 模拟弃牌
-        const tempCards = cardsArray.filter(c => c !== discardCard);
-        if (tempCards.length === 0) return;
-        // 检查弃牌后是否听牌
-        const { tingCards } = checkTingAll(tempCards);
-        if (tingCards.length > 0) {
-            recommendList.push({
-                discard: discardCard,
-                ting: tingCards,
-                count: tingCards.length
-            });
-        }
-    });
-
-    // 按听牌数量排序
-    return recommendList.sort((a, b) => b.count - a.count);
-}
-
-// 显示弃牌推荐
-function showDiscardRecommend(list) {
-    const container = document.getElementById('recommend-list');
-    container.innerHTML = '';
-    if (list.length === 0) {
-        container.innerHTML = '<p class="text-gray-500">暂无最优弃牌策略，请调整手牌</p>';
-        return;
-    }
-    list.forEach(item => {
-        const itemEl = document.createElement('div');
-        itemEl.className = 'recommend-item';
-        itemEl.innerHTML = `打出 <span>${item.discard}</span> → 听 ${item.ting.join('、')} (共${item.count}张)`;
-        container.appendChild(itemEl);
-    });
-}
-
-// 辅助函数
-function getRuleName() {
-    const map = { national: '国标麻将', sichuan: '四川麻将', guangdong: '广东麻将' };
-    return map[currentRule];
-}
-function showToast(msg) {
-    alert(msg);
-}
