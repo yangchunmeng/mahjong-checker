@@ -6,15 +6,24 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>麻将胡牌听牌分析器（手机版）</title>
-    <!-- 引入Tailwind + 图标 + 自定义样式 -->
+    <!-- 引入Tailwind + 升级Font Awesome（保证图标全） + 自定义样式 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <!-- 新增：引入麻将图标样式 -->
+    <link rel="stylesheet" href="mahjong-icons.css">
     <!-- 基础样式兜底，防止加载异常 -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
         body { font-size: 16px; line-height: 1.5; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         select, button { font-size: 16px !important; min-height: 44px !important; }
+        /* 修复牌面元素的flex布局，保证图标+文字居中 */
+        .ma-card {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
     </style>
 </head>
 <body>
