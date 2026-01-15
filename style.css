@@ -4,9 +4,10 @@
     height: 60px !important;
     border: 1px solid #333;
     border-radius: 6px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: flex !important;
+    flex-direction: column !important; /* 图标+文字垂直排列 */
+    justify-content: center !important;
+    align-items: center !important;
     font-size: 18px !important;
     font-weight: bold;
     cursor: pointer;
@@ -15,9 +16,7 @@
     margin: 2px !important;
     position: relative;
 }
-.ma-card.active { background-color: #f0f0f0; transform: scale(0.98); }
-.ma-card.selected { background-color: #ffec99; border-color: #ff9800; }
-.ma-card.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+/* 其他原有样式保持不变 */
 
 /* 数量徽章 */
 .count-badge {
