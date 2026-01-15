@@ -1,10 +1,9 @@
-/* 全局手机端适配：移除固定宽，弹性布局，触控优化。 */
 * {
     box-sizing: border-box;
-    touch-action: manipulation; /* 禁止手机浏览器默认触控行为 */
+    touch-action: manipulation;
 }
 body {
-    font-size: 16px !important; /* 手机端基础字体，iOS不默认缩小 */
+    font-size: 16px !important;
     line-height: 1.5;
     margin: 0;
     padding: 0;
@@ -15,26 +14,24 @@ body {
     padding: 0 8px !important;
 }
 
-/* 手机端麻将牌核心：放大触控区域（≥44px），适配点击 */
 .ma-card {
-    width: 44px !important; /* 手机端标准触控宽度 */
-    height: 60px !important; /* 触控高度适配 */
+    width: 44px !important;
+    height: 60px !important;
     border: 1px solid #333;
     border-radius: 6px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 18px !important; /* 手机端牌面字体放大 */
+    font-size: 18px !important;
     font-weight: bold;
     cursor: pointer;
     background-color: #fff;
     transition: all 0.2s ease;
     margin: 2px !important;
 }
-/* 手机端移除hover，添加active触控反馈（点击变浅） */
 .ma-card:active {
     background-color: #f0f0f0;
-    transform: scale(0.98); /* 点击微缩，模拟按压 */
+    transform: scale(0.98);
 }
 .ma-card.selected {
     background-color: #ffec99;
@@ -46,17 +43,15 @@ body {
     pointer-events: none;
 }
 
-/* 手牌区-手机端优化 */
 .hand-card {
     position: relative;
     margin: 3px !important;
 }
-/* 手牌删除按钮-手机端放大，避免误触 */
 .hand-card .delete-btn {
     position: absolute;
     top: -8px;
     right: -8px;
-    width: 22px !important; /* 放大删除按钮 */
+    width: 22px !important;
     height: 22px !important;
     background-color: #ff4444;
     color: white;
@@ -66,10 +61,9 @@ body {
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    opacity: 1 !important; /* 手机端始终显示删除按钮，无需hover */
+    opacity: 1 !important;
     z-index: 10;
 }
-/* 数量徽章-手机端放大 */
 .ma-card .count-badge {
     position: absolute;
     top: -8px;
@@ -86,7 +80,6 @@ body {
     z-index: 5;
 }
 
-/* 番型详情-手机端精简间距 */
 #fan-details {
     margin-top: 4px;
     padding: 3px;
@@ -101,21 +94,20 @@ body {
     margin: 1px;
     background-color: #e3f2fd;
     border-radius: 3px;
-    font-size: 12px !important; /* 手机端番型标签字体 */
+    font-size: 12px !important;
 }
 .high-fan { background-color: #fce4ec; color: #d81b60; }
 .medium-fan { background-color: #ffebee; color: #c62828; }
 .base-fan { background-color: #e8f5e9; color: #2e7d32; }
 .special-fan { background-color: #fff3e0; color: #f57c00; }
 
-/* 弃牌推荐-手机端核心优化：竖向卡片，放大字体，触控友好 */
 .recommend-item {
     padding: 10px 8px;
     background-color: #f8f9fa;
     border: 1px solid #dee2e6;
     border-radius: 8px;
     margin: 3px 0 !important;
-    font-size: 13px !important; /* 手机端推荐字体 */
+    font-size: 13px !important;
     width: 100% !important;
     max-width: 100% !important;
     line-height: 1.6;
@@ -140,7 +132,6 @@ body {
 .fan-preview { font-size: 12px; color: #6c757d; margin-left: 4px; }
 .fan-type { color: #d81b60; font-weight: 500; }
 
-/* 胡牌牌型图示-手机端迷你牌放大，适配查看 */
 .pattern-group {
     display: flex;
     flex-direction: column;
@@ -161,7 +152,6 @@ body {
     display: flex;
     gap: 2px !important;
 }
-/* 手机端迷你牌面放大，避免过小 */
 .pattern-card {
     width: 30px !important;
     height: 40px !important;
@@ -177,7 +167,6 @@ body {
 .ke-group { border-left: 3px solid #007bff; }
 .shun-group { border-left: 3px solid #28a745; }
 
-/* 计分结果-手机端高亮，字体适配 */
 .score-result {
     margin-top: 6px;
     padding: 4px;
@@ -188,27 +177,23 @@ body {
 }
 .final-score {
     color: #007bff;
-    font-size: 16px !important; /* 手机端最终得分放大 */
+    font-size: 16px !important;
     font-weight: bold;
 }
 
-/* 按钮/选择框-手机端触控优化 */
 button, select {
-    min-height: 44px !important; /* 手机端标准触控高度 */
-    font-size: 16px !important; /* 禁止iOS默认缩小select字体 */
+    min-height: 44px !important;
+    font-size: 16px !important;
 }
-/* 分析按钮-手机端全屏，突出显示 */
 #analyze-btn {
     min-height: 50px !important;
     font-size: 18px !important;
 }
-/* 小按钮-手机端适配 */
 #sort-hand-btn, #reset-btn {
     min-height: 36px !important;
     padding: 0 12px !important;
 }
 
-/* 隐藏手机端无用的滚动条 */
 ::-webkit-scrollbar {
     display: none;
 }
