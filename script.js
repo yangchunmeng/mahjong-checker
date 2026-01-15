@@ -55,8 +55,8 @@ const fanDefinitions = {
     }
 };
 
-// 选中的手牌
-let selectedCards = [];
+// 手牌数据结构：{ '1万': 2, '2万': 4, ... }
+let handCards = {};
 // 当前选中的规则
 let currentRule = 'national';
 // 特殊牌型标记
@@ -69,6 +69,9 @@ let lackType = 'none';
 
 // 初始化页面
 document.addEventListener('DOMContentLoaded', () => {
+    // 初始化手牌计数
+    initHandCards();
+    
     // 生成麻将牌
     generateCards();
     
@@ -100,6 +103,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // 初始化规则UI
     updateRuleUI();
 });
+
+// 初始化手牌计数对象
+function initHandCards() {
+    handCards = {};
+    // 为所有牌初始化计数为0
+    for (const [type, cards] of Object.entries(cardTypes)) {
+        cards.forEach(card => {
+            handCards[card] = 0;
+        });
+    }
+}
 
 // 更新规则相关UI
 function updateRuleUI() {
@@ -136,12 +150,10 @@ function updateLackCards() {
         cards.forEach(card => {
             card.classList.add('disabled');
             
-            // 如果定缺牌被选中，取消选中
-            if (card.classList.contains('selected')) {
-                card.classList.remove('selected');
-                const cardName = card.dataset.card;
-                selectedCards = selectedCards.filter(c => c !== cardName);
-            }
+            // 如果定缺牌被选中，重置其计数
+            const cardName = card.dataset.card;
+            handCards[cardName] = 0;
+            updateCardDisplay(card, cardName);
         });
         
         // 检查相公状态
@@ -159,47 +171,99 @@ function generateCards() {
         cards.forEach(card => {
             const cardElement = document.createElement('div');
             cardElement.className = 'ma-card';
-            cardElement.textContent = card;
             cardElement.dataset.card = card;
             
-            // 绑定点击事件
-            cardElement.addEventListener('click', () => {
-                toggleCardSelection(cardElement, card);
+            // 创建牌面内容
+            cardElement.innerHTML = `
+                <span class="card-text">${card}</span>
+                <span class="count-badge">0</span>
+            `;
+            
+            // 绑定点击事件 - 左键增加，右键减少
+            cardElement.addEventListener('click', (e) => {
+                // 左键增加
+                if (e.button === 0) {
+                    addCard(cardElement, card);
+                }
+            });
+            
+            // 右键减少（阻止默认右键菜单）
+            cardElement.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                removeCard(cardElement, card);
             });
             
             container.appendChild(cardElement);
+            
+            // 初始化显示
+            updateCardDisplay(cardElement, card);
         });
     }
 }
 
-// 切换牌的选中状态
-function toggleCardSelection(element, card) {
+// 增加一张牌
+function addCard(element, card) {
     // 跳过禁用的牌
     if (element.classList.contains('disabled')) return;
     
-    // 检查当前牌的选中数量
-    const currentCount = selectedCards.filter(c => c === card).length;
-    
-    // 每张牌最多选4张
-    if (element.classList.contains('selected')) {
-        // 取消选中
-        element.classList.remove('selected');
-        selectedCards = selectedCards.filter(c => c !== card);
-    } else if (currentCount < 4) {
-        // 选中
-        element.classList.add('selected');
-        selectedCards.push(card);
+    // 每张牌最多4张
+    if (handCards[card] < 4) {
+        handCards[card]++;
+        updateCardDisplay(element, card);
+        checkXianggong();
     } else {
-        showStatus('每种牌最多只能选4张！', 'warning');
+        showStatus(`【${card}】最多只能选4张！`, 'warning');
     }
+}
+
+// 减少一张牌
+function removeCard(element, card) {
+    // 跳过禁用的牌
+    if (element.classList.contains('disabled')) return;
     
-    // 实时检查相公状态
-    checkXianggong();
+    // 至少0张
+    if (handCards[card] > 0) {
+        handCards[card]--;
+        updateCardDisplay(element, card);
+        checkXianggong();
+    }
+}
+
+// 更新牌的显示状态
+function updateCardDisplay(element, card) {
+    const count = handCards[card];
+    const countBadge = element.querySelector('.count-badge');
+    
+    // 更新数量显示
+    countBadge.textContent = count;
+    
+    // 更新样式
+    if (count > 0) {
+        element.classList.add('selected', 'has-count');
+    } else {
+        element.classList.remove('selected', 'has-count');
+    }
+}
+
+// 获取当前手牌数组（展开形式：['1万','1万','2万',...]）
+function getHandCardsArray() {
+    const cardsArray = [];
+    for (const [card, count] of Object.entries(handCards)) {
+        for (let i = 0; i < count; i++) {
+            cardsArray.push(card);
+        }
+    }
+    return cardsArray;
+}
+
+// 获取手牌总数
+function getHandCardCount() {
+    return Object.values(handCards).reduce((total, count) => total + count, 0);
 }
 
 // 检查大小相公
 function checkXianggong() {
-    const cardCount = selectedCards.length;
+    const cardCount = getHandCardCount();
     const statusAlert = document.getElementById('status-alert');
     
     // 正常胡牌应该是13张（听牌）或14张（胡牌）
@@ -214,10 +278,10 @@ function checkXianggong() {
     
     if (cardCount < 13) {
         statusAlert.classList.add('alert-warning');
-        statusAlert.textContent = `少相公！还差 ${13 - cardCount} 张牌`;
+        statusAlert.textContent = `少相公！当前${cardCount}张，还差 ${13 - cardCount} 张牌`;
     } else if (cardCount > 14) {
         statusAlert.classList.add('alert-error');
-        statusAlert.textContent = `大相公！多了 ${cardCount - 14} 张牌`;
+        statusAlert.textContent = `大相公！当前${cardCount}张，多了 ${cardCount - 14} 张牌`;
     }
     
     return true;
@@ -226,25 +290,19 @@ function checkXianggong() {
 // 分析手牌
 function analyzeHand() {
     const resultArea = document.getElementById('result-area');
-    const cardCount = selectedCards.length;
+    const cardCount = getHandCardCount();
     
     // 检查相公状态
     if (checkXianggong()) {
-        resultArea.innerHTML = '<p class="text-red-600">手牌数量不正确，无法分析胡牌/听牌状态！</p>';
+        resultArea.innerHTML = `<p class="text-red-600">手牌数量不正确（当前${cardCount}张），无法分析胡牌/听牌状态！</p>`;
         hideFanDetails();
         return;
     }
     
     // 检查四川麻将定缺规则
     if (currentRule === 'sichuan' && lackType !== 'none') {
-        const lackCards = selectedCards.filter(card => {
-            if (lackType === 'wan') return card.includes('万');
-            if (lackType === 'tiao') return card.includes('条');
-            if (lackType === 'tong') return card.includes('筒');
-            return false;
-        });
-        
-        if (lackCards.length > 0) {
+        const lackCardsCount = getLackCardsCount();
+        if (lackCardsCount > 0) {
             showStatus('违反定缺规则！不能有' + lackType + '子牌', 'error');
             resultArea.innerHTML = `<p class="text-red-600">违反定缺规则！手牌中包含${lackType}子牌，不符合四川麻将规则</p>`;
             hideFanDetails();
@@ -252,8 +310,11 @@ function analyzeHand() {
         }
     }
     
+    // 获取展开的手牌数组
+    const cardsArray = getHandCardsArray();
+    
     // 整理手牌数据
-    const cardGroups = organizeCards(selectedCards);
+    const cardGroups = organizeCards(cardsArray);
     
     // 判断胡牌状态
     let isHu = false;
@@ -271,12 +332,27 @@ function analyzeHand() {
         }
     } else if (cardCount === 13) {
         // 13张牌，判断听牌
-        tingCards = checkTing(cardGroups);
+        tingCards = checkTing(cardGroups, cardsArray);
         hideFanDetails();
     }
     
     // 显示结果
     displayResult(isHu, fanInfo, tingCards, cardCount);
+}
+
+// 获取定缺牌的数量（四川麻将）
+function getLackCardsCount() {
+    let count = 0;
+    for (const [card, cardCount] of Object.entries(handCards)) {
+        if (lackType === 'wan' && card.includes('万')) {
+            count += cardCount;
+        } else if (lackType === 'tiao' && card.includes('条')) {
+            count += cardCount;
+        } else if (lackType === 'tong' && card.includes('筒')) {
+            count += cardCount;
+        }
+    }
+    return count;
 }
 
 // 整理手牌为便于计算的格式
@@ -624,7 +700,7 @@ function isYiTiaoLong(groups) {
 }
 
 // 检查听牌
-function checkTing(cardGroups) {
+function checkTing(cardGroups, originalCards) {
     const tingCards = [];
     const allCards = [
         ...cardTypes.wanzi,
@@ -645,11 +721,10 @@ function checkTing(cardGroups) {
         }
         
         // 检查当前牌是否已经有4张
-        const currentCount = selectedCards.filter(c => c === card).length;
-        if (currentCount >= 4) return;
+        if (handCards[card] >= 4) return;
         
         // 模拟添加这张牌
-        const tempSelected = [...selectedCards, card];
+        const tempSelected = [...originalCards, card];
         const tempGroups = organizeCards(tempSelected);
         
         // 检查是否胡牌
@@ -724,12 +799,13 @@ function hideFanDetails() {
 
 // 重置手牌
 function resetHand() {
-    // 清空选中的牌
-    selectedCards = [];
+    // 重置手牌计数
+    initHandCards();
     
-    // 移除所有选中样式
-    document.querySelectorAll('.ma-card.selected').forEach(card => {
-        card.classList.remove('selected');
+    // 更新所有牌的显示
+    document.querySelectorAll('.ma-card').forEach(card => {
+        const cardName = card.dataset.card;
+        updateCardDisplay(card, cardName);
     });
     
     // 清空结果和状态
