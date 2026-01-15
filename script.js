@@ -63,7 +63,7 @@ function initHandCards() {
     updateHandCardDisplay();
 }
 
-// 生成牌库
+// 生成牌库（极简样式）
 function generateCardLibrary() {
     for (const [type, cards] of Object.entries(cardTypes)) {
         const container = document.getElementById(`${type}-container`);
@@ -74,13 +74,13 @@ function generateCardLibrary() {
     }
 }
 
-// 创建麻将牌元素（极简样式）
+// 创建极简麻将牌元素
 function createCardElement(card, type) {
     const cardEl = document.createElement('div');
     cardEl.className = 'ma-card';
     cardEl.dataset.card = card;
-    cardEl.textContent = card;
-
+    cardEl.textContent = card; // 极简样式，仅显示文字
+    
     // 点击添加手牌（最多4张）
     cardEl.addEventListener('click', () => {
         if (handCards[card] >= 4) {
@@ -229,7 +229,7 @@ function updateHandCardDisplay(forceSort = false) {
     // 去重获取唯一牌
     const uniqueCards = [...new Set(cardsArray)];
     
-    // 生成手牌展示元素
+    // 生成手牌展示元素（极简样式）
     uniqueCards.forEach(card => {
         const count = handCards[card];
         const cardEl = createCardElement(card, getCardType(card));
@@ -278,7 +278,7 @@ function getCardType(card) {
     return 'zapai';
 }
 
-// 分析手牌核心逻辑
+// 分析手牌核心逻辑（整合优化推荐）
 function analyzeHand() {
     const resultArea = document.getElementById('result-area');
     const recommendArea = document.getElementById('discard-recommend');
@@ -317,7 +317,7 @@ function analyzeHand() {
         generateHuPatternDisplay(huPattern);
         patternArea.classList.remove('hidden');
     } else {
-        // 判断听牌 + 弃牌推荐
+        // 判断听牌 + 优化后的弃牌推荐
         const tingInfo = checkTingAll(cardsArray);
         if (tingInfo.tingCards.length > 0) {
             resultHtml = `
@@ -326,13 +326,13 @@ function analyzeHand() {
                 <div class="mt-2 text-sm text-gray-500">当前规则：${getRuleName()}</div>
             `;
         } else {
-            // 未听牌，推荐弃牌（优化版）
+            // 未听牌，使用优化后的推荐逻辑
             const recommendList = getDiscardRecommend(cardsArray);
             resultHtml = `
                 <div class="text-orange-600 font-medium mb-2">未听牌</div>
                 <div>推荐以下弃牌策略：</div>
             `;
-            showOptimizedRecommend(recommendList); // 使用优化后的推荐展示
+            showOptimizedRecommend(recommendList); // 使用优化后的展示函数
             recommendArea.classList.remove('hidden');
         }
     }
@@ -454,7 +454,7 @@ function getCardNameByIndex(type, index) {
     return '';
 }
 
-// 生成胡牌牌型图示
+// 生成胡牌牌型图示（极简）
 function generateHuPatternDisplay(pattern) {
     const container = document.getElementById('pattern-container');
     container.innerHTML = '';
@@ -499,7 +499,7 @@ function generateHuPatternDisplay(pattern) {
     container.appendChild(groupsContainer);
 }
 
-// 创建牌型组元素
+// 创建牌型组元素（极简）
 function createPatternGroup(title, cards, className) {
     const group = document.createElement('div');
     group.className = `pattern-group ${className}`;
@@ -548,7 +548,6 @@ function organizeCards(cards) {
         } else if (card.includes('筒')) {
             const idx = parseInt(card) - 1;
             groups.tongzi[idx]++;
-            groupsongzi[idx]++;
             groups.total.tongzi++;
         } else {
             const idx = zapaiMap[card];
@@ -625,3 +624,231 @@ function calculateFan(cardGroups) {
 
     if (window.isLongQiDui) {
         details.push(rules.longqidui);
+        total += rules.longqidui.fan;
+    } else if (checkQiDui(cardGroups)) {
+        details.push(rules.qidui);
+        total += rules.qidui.fan;
+    } else {
+        details.push(rules.pinghu);
+        total += rules.pinghu.fan;
+        if (isPengPengHu(cardGroups)) { details.push(rules.pengpenghu); total += rules.pengpenghu.fan; }
+        if (isQingYiSe(cardGroups)) { details.push(rules.qingyise); total += rules.qingyise.fan; }
+        else if (isHunYiSe(cardGroups)) { details.push(rules.hunyise); total += rules.hunyise.fan; }
+    }
+
+    if (specialFlags.gangshanghua) { details.push(rules.gangshanghua); total += rules.gangshanghua.fan; }
+    if (specialFlags.haidilaoyue) { details.push(rules.haidilaoyue); total += rules.haidilaoyue.fan; }
+
+    return { total, details };
+}
+
+// 判断碰碰胡/清一色/混一色
+function isPengPengHu(groups) {
+    for (const type of ['wanzi', 'tiaozi', 'tongzi']) {
+        for (let i = 0; i < 9; i++) {
+            if (groups[type][i] !== 0 && groups[type][i] !== 3) return false;
+        }
+    }
+    for (let i = 0; i < 7; i++) {
+        if (groups.zapai[i] !== 0 && groups.zapai[i] !== 3) return false;
+    }
+    return true;
+}
+function isQingYiSe(groups) {
+    const { wanzi, tiaozi, tongzi, zapai } = groups.total;
+    return zapai === 0 && (wanzi > 0 && tiaozi === 0 && tongzi === 0 ||
+                           tiaozi > 0 && wanzi === 0 && tongzi === 0 ||
+                           tongzi > 0 && wanzi === 0 && tiaozi === 0);
+}
+function isHunYiSe(groups) {
+    const { wanzi, tiaozi, tongzi, zapai } = groups.total;
+    if (zapai === 0) return false;
+    const suitCount = [wanzi > 0, tiaozi > 0, tongzi > 0].filter(Boolean).length;
+    return suitCount === 1;
+}
+
+// 检查听牌（所有可能）
+function checkTingAll(cardsArray) {
+    const allCards = [...cardTypes.wanzi, ...cardTypes.tiaozi, ...cardTypes.tongzi, ...cardTypes.zapai];
+    const tingCards = [];
+
+    allCards.forEach(card => {
+        if (handCards[card] >= 4) return;
+        if (isLackCard(card)) return;
+        const tempCards = [...cardsArray, card];
+        const tempGroups = organizeCards(tempCards);
+        if (isHu(tempGroups, tempCards.length)) tingCards.push(card);
+    });
+
+    return { tingCards };
+}
+
+// ===================== 优化后的弃牌推荐核心功能 =====================
+// 计算单张听牌的质量分数（1-5分）
+function calculateCardQuality(card) {
+    // 幺九牌（1、9的序数牌）基础分 3 分
+    if (card.startsWith('1') || card.startsWith('9')) {
+        return 3;
+    }
+    // 中张牌（2-8）基础分 1 分
+    if (/^[2-8]/.test(card)) {
+        return 1;
+    }
+    // 字牌基础分 2 分
+    return 2;
+}
+
+// 计算某弃牌策略的综合质量分
+function calculateRecommendQuality(recommendItem) {
+    const { ting } = recommendItem;
+    // 总分 = 听牌数量分 + 听牌质量平均分
+    const countScore = ting.length * 2; // 数量权重更高
+    const qualityScore = ting.reduce((sum, card) => sum + calculateCardQuality(card), 0) / ting.length;
+    return countScore + qualityScore;
+}
+
+// 预测听牌后的番型
+function predictFanType(tempCards, cardToHu) {
+    const huCards = [...tempCards, cardToHu];
+    const cardGroups = organizeCards(huCards);
+    const fanInfo = calculateFan(cardGroups);
+    return fanInfo.total;
+}
+
+// 为推荐项添加番型预览
+function addFanPreviewToRecommend(recommendList) {
+    return recommendList.map(item => {
+        const { tempCards, ting } = item;
+        // 取第一张听牌的番型作为参考（默认最大番型）
+        const sampleFan = predictFanType(tempCards, ting[0]);
+        return {
+            ...item,
+            fanPreview: sampleFan,
+            score: calculateRecommendQuality(item) // 计算质量分
+        };
+    });
+}
+
+// 优化推荐排序（按综合质量分降序）
+function sortRecommendByPriority(recommendList) {
+    // 按分数降序排序
+    return recommendList.sort((a, b) => b.score - a.score);
+}
+
+// 区分进攻型/防守型推荐
+function classifyRecommendType(recommendList) {
+    return {
+        // 进攻型：分数最高的前2个
+        attack: recommendList.slice(0, 2).map(item => ({
+            ...item,
+            type: 'attack',
+            label: '最优进攻'
+        })),
+        // 防守型：剩余的推荐项
+        defense: recommendList.slice(2).map(item => ({
+            ...item,
+            type: 'defense',
+            label: '稳妥防守'
+        }))
+    };
+}
+
+// 弃牌听牌推荐（优化版）
+function getDiscardRecommend(cardsArray) {
+    const recommendList = [];
+    const uniqueCards = [...new Set(cardsArray)];
+
+    uniqueCards.forEach(discardCard => {
+        if (handCards[discardCard] === 0) return;
+        // 模拟弃牌
+        const tempCards = cardsArray.filter(c => c !== discardCard);
+        if (tempCards.length === 0) return;
+        // 检查弃牌后是否听牌
+        const { tingCards } = checkTingAll(tempCards);
+        if (tingCards.length > 0) {
+            recommendList.push({
+                discard: discardCard,
+                ting: tingCards,
+                count: tingCards.length,
+                tempCards: tempCards
+            });
+        }
+    });
+
+    // 添加番型预览并排序
+    const listWithFan = addFanPreviewToRecommend(recommendList);
+    return sortRecommendByPriority(listWithFan);
+}
+
+// 优化推荐结果渲染
+function showOptimizedRecommend(list) {
+    const container = document.getElementById('recommend-list');
+    container.innerHTML = '';
+
+    if (list.length === 0) {
+        container.innerHTML = '<p class="text-gray-500">暂无最优弃牌策略，请调整手牌</p>';
+        return;
+    }
+
+    // 分类推荐类型
+    const { attack, defense } = classifyRecommendType(list);
+
+    // 渲染进攻型推荐
+    if (attack.length > 0) {
+        const attackDiv = document.createElement('div');
+        attackDiv.className = 'mb-4';
+        attackDiv.innerHTML = `<h4 class="text-green-600 font-medium mb-2">📈 进攻型推荐（优先胡牌）</h4>`;
+        
+        attack.forEach(item => {
+            const itemEl = createRecommendItem(item);
+            attackDiv.appendChild(itemEl);
+        });
+        
+        container.appendChild(attackDiv);
+    }
+
+    // 渲染防守型推荐
+    if (defense.length > 0) {
+        const defenseDiv = document.createElement('div');
+        defenseDiv.className = 'mb-4';
+        defenseDiv.innerHTML = `<h4 class="text-blue-600 font-medium mb-2">🛡️ 防守型推荐（避免点炮）</h4>`;
+        
+        defense.forEach(item => {
+            const itemEl = createRecommendItem(item);
+            defenseDiv.appendChild(itemEl);
+        });
+        
+        container.appendChild(defenseDiv);
+    }
+}
+
+// 创建推荐项元素（带标签和番型）
+function createRecommendItem(item) {
+    const itemEl = document.createElement('div');
+    itemEl.className = `recommend-item ${item.type}`;
+    
+    // 高亮幺九牌
+    const tingText = item.ting.map(card => {
+        if (card.startsWith('1') || card.startsWith('9')) {
+            return `<span class="highlight-card">${card}</span>`;
+        }
+        return card;
+    }).join('、');
+
+    itemEl.innerHTML = `
+        <span class="recommend-label label-${item.type}">${item.label}</span>
+        打出 <span>${item.discard}</span> → 听 ${tingText} 
+        (共${item.count}张)
+        <span class="fan-preview">胡牌预计${item.fanPreview}番</span>
+    `;
+    return itemEl;
+}
+
+// ===================== 辅助函数 =====================
+function getRuleName() {
+    const map = { national: '国标麻将', sichuan: '四川麻将', guangdong: '广东麻将' };
+    return map[currentRule];
+}
+function showToast(msg) {
+    alert(msg);
+}
