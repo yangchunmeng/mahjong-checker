@@ -1,4 +1,4 @@
-// 创建极简麻将牌元素
+// 创建极简麻将牌元素 
 function createCardElement(card, type) {
     const cardEl = document.createElement('div');
     cardEl.className = 'ma-card';
