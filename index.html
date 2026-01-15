@@ -2,140 +2,152 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>麻将胡牌听牌分析器（实战版）</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>麻将胡牌听牌分析器（手机版）</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 手机端紧急样式兜底 */
+        * { touch-action: manipulation; }
+        body { font-size: 16px; line-height: 1.5; }
+        select, button { font-size: 16px !important; } /* 避免iOS默认缩小字体 */
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-6xl">
-        <!-- 导航栏 -->
-        <nav class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">麻将胡牌听牌分析器</h1>
+    <div class="container mx-auto px-3 py-4 max-w-full">
+        <!-- 导航栏-手机端精简 -->
+        <nav class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold text-gray-800">麻将听牌分析器</h1>
             <div>
-                <a href="rules.html" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-                    <i class="fas fa-book mr-2"></i>麻将规则说明
+                <a href="rules.html" class="bg-gray-600 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition text-sm">
+                    <i class="fas fa-book mr-1"></i>规则
                 </a>
             </div>
         </nav>
 
-        <!-- 规则选择区 -->
-        <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold mb-4">规则设置</h2>
-            <div class="flex flex-wrap gap-4 items-center">
-                <label class="font-medium">选择麻将规则：</label>
-                <select id="rule-selector" class="px-4 py-2 border border-gray-300 rounded-lg">
-                    <option value="national">国标麻将</option>
-                    <option value="sichuan">四川麻将</option>
-                    <option value="guangdong">广东麻将</option>
-                </select>
+        <!-- 规则选择区-手机端竖向堆叠 -->
+        <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+            <h2 class="text-lg font-semibold mb-3">规则设置</h2>
+            <div class="flex flex-col gap-3">
+                <div class="flex items-center gap-2">
+                    <label class="font-medium min-w-[100px]">麻将规则：</label>
+                    <select id="rule-selector" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg">
+                        <option value="national">国标麻将（2011版）</option>
+                        <option value="sichuan">四川麻将</option>
+                        <option value="guangdong">广东麻将</option>
+                    </select>
+                </div>
+
+                <!-- 底分设置-手机端适配 -->
+                <div class="flex items-center gap-2">
+                    <label class="font-medium min-w-[100px]">底分：</label>
+                    <select id="base-score" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg" disabled>
+                        <option value="1" selected>1</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
                 
-                <!-- 四川麻将定缺 -->
-                <div id="sichuan-options" class="hidden">
-                    <label class="font-medium mr-2">定缺：</label>
-                    <select id="lack-selector" class="px-4 py-2 border border-gray-300 rounded-lg">
+                <!-- 四川麻将定缺-手机端适配 -->
+                <div id="sichuan-options" class="hidden flex items-center gap-2">
+                    <label class="font-medium min-w-[100px]">定缺：</label>
+                    <select id="lack-selector" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg">
                         <option value="none">无</option>
                         <option value="wan">万</option>
                         <option value="tiao">条</option>
                         <option value="tong">筒</option>
                     </select>
                 </div>
-                
-                <!-- 特殊牌型 -->
-                <div class="ml-auto">
-                    <label class="inline-flex items-center mr-4">
-                        <input type="checkbox" id="gangshanghua" class="mr-2"> 杠上花
-                    </label>
-                    <label class="inline-flex items-center">
-                        <input type="checkbox" id="haidilaoyue" class="mr-2"> 海底捞月
-                    </label>
-                </div>
             </div>
         </div>
 
-        <!-- 手牌选择区 -->
-        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
-            <h2 class="text-xl font-semibold mb-4">牌库选择</h2>
-            <!-- 牌型分类 -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <!-- 手牌选择区-手机端牌库放大 -->
+        <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+            <h2 class="text-lg font-semibold mb-3">牌库选择</h2>
+            <!-- 牌型分类-手机端单列，牌放大 -->
+            <div class="flex flex-col gap-4 mb-4">
                 <!-- 万子 -->
                 <div>
-                    <h3 class="text-lg font-medium mb-2 text-center">万子</h3>
-                    <div class="flex flex-wrap justify-center gap-2" id="wanzi-container">
+                    <h3 class="text-base font-medium mb-2 text-center">万子</h3>
+                    <div class="flex flex-wrap justify-center gap-1.5" id="wanzi-container">
                         <!-- JS动态生成 -->
                     </div>
                 </div>
                 
                 <!-- 条子 -->
                 <div>
-                    <h3 class="text-lg font-medium mb-2 text-center">条子</h3>
-                    <div class="flex flex-wrap justify-center gap-2" id="tiaozi-container">
+                    <h3 class="text-base font-medium mb-2 text-center">条子</h3>
+                    <div class="flex flex-wrap justify-center gap-1.5" id="tiaozi-container">
                         <!-- JS动态生成 -->
                     </div>
                 </div>
                 
                 <!-- 筒子 -->
                 <div>
-                    <h3 class="text-lg font-medium mb-2 text-center">筒子</h3>
-                    <div class="flex flex-wrap justify-center gap-2" id="tongzi-container">
+                    <h3 class="text-base font-medium mb-2 text-center">筒子</h3>
+                    <div class="flex flex-wrap justify-center gap-1.5" id="tongzi-container">
                         <!-- JS动态生成 -->
                     </div>
                 </div>
             </div>
 
-            <!-- 字牌 -->
-            <div id="zapai-section" class="mb-6">
-                <h3 class="text-lg font-medium mb-2 text-center">字牌</h3>
-                <div class="flex flex-wrap justify-center gap-2" id="zapai-container">
+            <!-- 字牌-手机端放大 -->
+            <div id="zapai-section" class="mb-2">
+                <h3 class="text-base font-medium mb-2 text-center">字牌</h3>
+                <div class="flex flex-wrap justify-center gap-1.5" id="zapai-container">
                     <!-- JS动态生成 -->
                 </div>
             </div>
         </div>
 
-        <!-- 当前手牌展示区 -->
-        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">当前手牌 
-                    <span class="text-sm text-gray-500">(自动排序，支持碰杠后手牌)</span>
+        <!-- 当前手牌展示区-手机端优化 -->
+        <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-lg font-semibold">当前手牌 
+                    <span class="text-xs text-gray-500">(自动排序)</span>
                 </h2>
-                <button id="sort-hand-btn" class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition text-sm">
-                    <i class="fas fa-sort mr-1"></i>重新排序
+                <button id="sort-hand-btn" class="bg-green-600 text-white px-2 py-1 rounded-lg hover:bg-green-700 transition text-xs">
+                    <i class="fas fa-sort mr-1"></i>排序
                 </button>
             </div>
-            <div class="flex flex-wrap justify-center gap-3 min-h-[100px] items-center" id="hand-card-display">
-                <p class="text-gray-500">暂无手牌，请从牌库选择</p>
+            <div class="flex flex-wrap justify-center gap-2 min-h-[80px] items-center" id="hand-card-display">
+                <p class="text-gray-500 text-sm">暂无手牌，请从牌库选择</p>
             </div>
-            <div class="mt-4 text-center">
-                <span class="text-gray-600 mr-4">手牌数量：<span id="card-count">0</span> 张</span>
-                <button id="reset-btn" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">清空手牌</button>
+            <div class="mt-3 flex justify-between items-center">
+                <span class="text-gray-600 text-sm">手牌数量：<span id="card-count">0</span> 张</span>
+                <button id="reset-btn" class="bg-gray-600 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition text-sm">清空手牌</button>
             </div>
         </div>
 
-        <!-- 分析按钮 -->
-        <div class="text-center mb-8">
-            <button id="analyze-btn" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition text-lg">分析听牌/胡牌</button>
+        <!-- 分析按钮-手机端全屏放大 -->
+        <div class="text-center mb-4">
+            <button id="analyze-btn" class="bg-blue-600 text-white w-full px-6 py-3 rounded-lg hover:bg-blue-700 transition text-base font-medium">
+                分析听牌/胡牌
+            </button>
         </div>
 
-        <!-- 分析结果区 -->
-        <div class="bg-white rounded-xl shadow-md p-6">
-            <h2 class="text-xl font-semibold mb-4">分析结果</h2>
-            <div id="result-area" class="text-gray-700">
+        <!-- 分析结果区-手机端精简间距 -->
+        <div class="bg-white rounded-xl shadow-md p-4">
+            <h2 class="text-lg font-semibold mb-3">分析结果</h2>
+            <div id="result-area" class="text-gray-700 text-sm">
                 请选择手牌后点击分析按钮
             </div>
 
-            <!-- 胡牌牌型图示区 -->
-            <div id="hu-pattern-display" class="mt-6 hidden">
-                <h3 class="text-lg font-medium mb-3 text-green-600">胡牌牌型分解</h3>
-                <div class="flex flex-wrap justify-center gap-4" id="pattern-container">
+            <!-- 胡牌牌型图示区-手机端适配 -->
+            <div id="hu-pattern-display" class="mt-4 hidden">
+                <h3 class="text-base font-medium mb-2 text-green-600">胡牌牌型分解</h3>
+                <div class="flex flex-wrap justify-center gap-2" id="pattern-container">
                     <!-- JS动态生成牌型图示 -->
                 </div>
             </div>
 
-            <!-- 弃牌推荐区 -->
-            <div id="discard-recommend" class="mt-6 hidden">
-                <h3 class="text-lg font-medium mb-2 text-blue-600">弃牌听牌推荐</h3>
-                <div id="recommend-list" class="flex flex-wrap gap-2">
+            <!-- 弃牌推荐区-手机端竖向卡片优化 -->
+            <div id="discard-recommend" class="mt-4 hidden">
+                <h3 class="text-base font-medium mb-2 text-blue-600">弃牌听牌推荐</h3>
+                <div id="recommend-list" class="flex flex-wrap gap-2 flex-col">
                     <!-- JS动态生成 -->
                 </div>
             </div>
