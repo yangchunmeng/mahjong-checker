@@ -5,6 +5,7 @@
     border: 2px solid #333;
     border-radius: 8px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     font-size: 24px;
@@ -12,6 +13,29 @@
     cursor: pointer;
     background-color: white;
     transition: all 0.2s ease;
+    position: relative;
+}
+
+/* 牌数量标记 */
+.ma-card .count-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 24px;
+    height: 24px;
+    background-color: #ff4757;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
+    opacity: 0;
+}
+
+.ma-card.has-count .count-badge {
+    opacity: 1;
 }
 
 .ma-card.selected {
