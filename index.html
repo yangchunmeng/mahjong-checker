@@ -89,62 +89,10 @@
             </div>
         </div>
 
-        <!-- 碰/杠牌选择区 -->
-        <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
-            <div class="flex justify-between items-center mb-3">
-                <h2 class="text-lg font-semibold text-gray-800">碰/杠牌型 <span class="text-xs text-gray-500">(已碰/明杠/暗杠)</span></h2>
-                <button id="reset-penggang-btn" class="bg-gray-700 text-white px-3 py-1.5 rounded-lg hover:bg-gray-600 transition text-sm">
-                    清空碰/杠
-                </button>
-            </div>
-            
-            <!-- 碰/杠类型选择 -->
-            <div class="flex items-center gap-2 mb-3">
-                <label class="font-medium min-w-[80px] text-gray-700">操作类型：</label>
-                <select id="pg-type-selector" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500">
-                    <option value="peng">碰</option>
-                    <option value="minggang">明杠</option>
-                    <option value="angang">暗杠</option>
-                </select>
-            </div>
-
-            <!-- 碰/杠牌选择容器 -->
-            <div class="flex flex-col gap-4 mb-4">
-                <!-- 万子碰/杠 -->
-                <div>
-                    <h3 class="text-base font-medium mb-2 text-center text-gray-700">万子</h3>
-                    <div class="flex flex-wrap justify-center gap-1.5" id="pg-wanzi-container"></div>
-                </div>
-                <!-- 条子碰/杠 -->
-                <div>
-                    <h3 class="text-base font-medium mb-2 text-center text-gray-700">条子</h3>
-                    <div class="flex flex-wrap justify-center gap-1.5" id="pg-tiaozi-container"></div>
-                </div>
-                <!-- 筒子碰/杠 -->
-                <div>
-                    <h3 class="text-base font-medium mb-2 text-center text-gray-700">筒子</h3>
-                    <div class="flex flex-wrap justify-center gap-1.5" id="pg-tongzi-container"></div>
-                </div>
-            </div>
-            <!-- 字牌碰/杠（四川麻将会隐藏） -->
-            <div id="pg-zapai-section" class="mb-2">
-                <h3 class="text-base font-medium mb-2 text-center text-gray-700">字牌</h3>
-                <div class="flex flex-wrap justify-center gap-1.5" id="pg-zapai-container"></div>
-            </div>
-
-            <!-- 已选碰/杠牌展示 -->
-            <div class="mt-3">
-                <h3 class="text-sm font-medium mb-2 text-gray-700">已选碰/杠牌：</h3>
-                <div class="flex flex-wrap justify-center gap-2 min-h-[60px] items-center" id="pg-card-display">
-                    <p class="text-gray-500 text-sm">暂无碰/杠牌，请从上方选择</p>
-                </div>
-            </div>
-        </div>
-
         <!-- 当前手牌区 -->
         <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
             <div class="flex justify-between items-center mb-3">
-                <h2 class="text-lg font-semibold text-gray-800">当前手牌 <span class="text-xs text-gray-500">(自动排序)</span></h2>
+                <h2 class="text-lg font-semibold text-gray-800">当前手牌 <span class="text-xs text-gray-500">(自动排序，支持杠/碰并行)</span></h2>
                 <button id="sort-hand-btn" class="bg-green-600 text-white px-2 py-1 rounded-lg hover:bg-green-500 transition text-xs flex items-center">
                     <i class="fas fa-sort mr-1"></i> 排序
                 </button>
@@ -175,7 +123,7 @@
             </div>
             <!-- 胡牌牌型分解（默认隐藏） -->
             <div id="hu-pattern-display" class="mt-4 hidden">
-                <h3 class="text-base font-medium mb-2 text-green-600">胡牌牌型分解</h3>
+                <h3 class="text-base font-medium mb-2 text-green-600">胡牌牌型分解（含杠/碰刻子）</h3>
                 <div class="flex flex-wrap justify-center gap-2" id="pattern-container"></div>
             </div>
             <!-- 弃牌推荐（默认隐藏） -->
