@@ -3,37 +3,33 @@
     box-sizing: border-box;
 }
 
-/* 麻将牌核心样式 - 仿真实麻将牌 */
+/* 极简麻将牌核心样式 */
 .ma-card {
-    width: 65px;
-    height: 90px;
-    border: 2px solid #333;
-    border-radius: 8px;
+    width: 60px;
+    height: 80px;
+    border: 1px solid #333;
+    border-radius: 4px;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: 22px;
-    font-weight: bold;
+    font-size: 20px;
+    font-weight: 600;
     cursor: pointer;
-    background-color: #fdfdfd;
-    background-image: linear-gradient(135deg, #fdfdfd 0%, #f5f5f5 100%);
+    background-color: #fff;
     transition: all 0.2s ease;
     position: relative;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* 牌库牌 hover 效果 */
 .ma-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background-color: #f0f0f0;
+    transform: scale(1.05);
 }
 
 /* 选中状态 */
 .ma-card.selected {
-    background-color: #ffec99;
-    background-image: linear-gradient(135deg, #ffec99 0%, #ffd866 100%);
-    border-color: #ff9800;
+    background-color: #fff3cd;
+    border-color: #ffc107;
 }
 
 /* 禁用状态（四川定缺） */
@@ -41,6 +37,7 @@
     opacity: 0.4;
     cursor: not-allowed;
     pointer-events: none;
+    background-color: #f8f9fa;
 }
 
 /* 手牌区牌样式 */
@@ -48,14 +45,14 @@
     position: relative;
 }
 
-/* 手牌删除按钮 */
+/* 手牌删除按钮（极简样式） */
 .hand-card .delete-btn {
     position: absolute;
-    top: -8px;
-    right: -8px;
-    width: 20px;
-    height: 20px;
-    background-color: #ff4444;
+    top: -5px;
+    right: -5px;
+    width: 18px;
+    height: 18px;
+    background-color: #dc3545;
     color: white;
     border-radius: 50%;
     font-size: 12px;
@@ -71,36 +68,20 @@
     opacity: 1;
 }
 
-/* 数量徽章（牌库牌） */
+/* 数量徽章（极简样式） */
 .ma-card .count-badge {
     position: absolute;
-    top: -8px;
-    right: -8px;
-    width: 24px;
-    height: 24px;
-    background-color: #ff4444;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    background-color: #dc3545;
     color: white;
     border-radius: 50%;
-    font-size: 14px;
+    font-size: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-/* 条子牌特殊样式 */
-.tiao-card i {
-    font-size: 20px;
-    color: #e91e63;
-}
-.tiao-card .tiao-text {
-    font-size: 16px;
-    margin-top: 4px;
-}
-
-/* 字牌样式 */
-.zi-card {
-    font-size: 24px;
-    color: #2196f3;
 }
 
 /* 番型详情样式 */
@@ -127,21 +108,63 @@
     color: #c62828;
 }
 
-/* 弃牌推荐样式 */
+/* 优化后的弃牌推荐样式 */
+.recommend-container {
+    width: 100%;
+}
+.recommend-group {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+}
+.recommend-group.attack {
+    background-color: #f8f9fa;
+    border: 1px solid #28a745;
+}
+.recommend-group.defense {
+    background-color: #f8f9fa;
+    border: 1px solid #007bff;
+}
+.recommend-group-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+.recommend-group-title.attack {
+    color: #28a745;
+}
+.recommend-group-title.defense {
+    color: #007bff;
+}
 .recommend-item {
-    padding: 4px 8px;
-    background-color: #e8f5e9;
-    border: 1px solid #4caf50;
+    padding: 6px 10px;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
     border-radius: 4px;
-    margin: 2px;
+    margin: 3px 0;
     font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 .recommend-item span {
-    color: #2e7d32;
-    font-weight: bold;
+    font-weight: 600;
+}
+.recommend-item .ting-cards {
+    margin: 0 8px;
+}
+.recommend-item .ting-card-highlight {
+    color: #dc3545;
+    font-weight: 600;
+}
+.recommend-item .fan-score {
+    font-size: 12px;
+    color: #6c757d;
+    background-color: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 3px;
 }
 
-/* 胡牌牌型图示样式 */
+/* 胡牌牌型图示（极简） */
 .pattern-group {
     display: flex;
     flex-direction: column;
@@ -149,7 +172,7 @@
     margin: 8px;
     padding: 8px;
     background-color: #f8f9fa;
-    border-radius: 8px;
+    border-radius: 4px;
     border: 1px solid #dee2e6;
 }
 .pattern-title {
@@ -166,7 +189,7 @@
     width: 40px;
     height: 55px;
     border: 1px solid #333;
-    border-radius: 4px;
+    border-radius: 2px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -174,16 +197,13 @@
     background-color: white;
 }
 .jiang-group {
-    border-color: #e91e63;
-    background-color: #fef7fb;
+    border-color: #dc3545;
 }
 .ke-group {
-    border-color: #2196f3;
-    background-color: #f0f8ff;
+    border-color: #007bff;
 }
 .shun-group {
-    border-color: #4caf50;
-    background-color: #f1f8e9;
+    border-color: #28a745;
 }
 
 /* 规则页样式 */
