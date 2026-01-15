@@ -51,7 +51,7 @@ const fanDefinitions = {
     }
 };
 
-// 全局变量（底分默认5，新增杠/碰计数）
+// 全局变量（底分默认为5，新增杠/碰计数）
 let handCards = {};
 let currentRule = 'national';
 let lackType = 'none';
