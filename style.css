@@ -4,10 +4,9 @@
     height: 60px !important;
     border: 1px solid #333;
     border-radius: 6px;
-    display: flex !important;
-    flex-direction: column !important; /* 图标+文字垂直排列 */
-    justify-content: center !important;
-    align-items: center !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-size: 18px !important;
     font-weight: bold;
     cursor: pointer;
@@ -16,7 +15,9 @@
     margin: 2px !important;
     position: relative;
 }
-/* 其他原有样式保持不变 */
+.ma-card.active { background-color: #f0f0f0; transform: scale(0.98); }
+.ma-card.selected { background-color: #ffec99; border-color: #ff9800; }
+.ma-card.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 
 /* 数量徽章 */
 .count-badge {
@@ -40,7 +41,7 @@
 .delete-btn {
     position: absolute;
     top: -8px;
-    right: -8px;
+    left: -8px; /* 调整位置避免和徽章重叠 */
     width: 22px !important;
     height: 22px !important;
     background-color: #ff4444;
@@ -152,7 +153,7 @@
     min-height: 50px !important;
     font-size: 18px !important;
 }
-#sort-hand-btn, #reset-btn {
+#sort-hand-btn, #reset-btn, #reset-penggang-btn {
     min-height: 36px !important;
     padding: 0 12px !important;
 }
